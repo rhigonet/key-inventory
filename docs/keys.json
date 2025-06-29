@@ -1,0 +1,79 @@
+[
+  {
+    "key_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "alias": "mastercard-encryption",
+    "environment": "prod",
+    "owner": "fraud-detection@tecro",
+    "purpose": "Real-time transaction signing",
+    "created_at": "2023-11-15T09:00:00Z",
+    "rotation_interval_days": 180,
+    "location": "gcp-kms://projects/tecro-prod/locations/us-central1/keyRings/fraud-keys/cryptoKeys/mastercard-key",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "top-secret"
+    },
+    "tags": [
+      "mastercard",
+      "signing",
+      "fraud-detection"
+    ]
+  },
+  {
+    "key_id": "00112233-4455-6677-8899-aabbccddeeff",
+    "alias": "db-encryption-dev",
+    "environment": "dev",
+    "owner": "db-admins@tecro",
+    "purpose": "Encrypting sensitive columns in the development database",
+    "created_at": "2024-03-01T18:00:00Z",
+    "rotation_interval_days": 730,
+    "location": "azure-key-vault://tecro-dev-vault.vault.azure.net/keys/db-dev-key",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "internal"
+    },
+    "tags": [
+      "database",
+      "encryption",
+      "dev"
+    ]
+  },
+  {
+    "key_id": "42b7a3d1-f2e4-4a1b-8c8a-1234567890ab",
+    "alias": "visa-tokenization",
+    "environment": "prod",
+    "owner": "payments-platform@tecro",
+    "purpose": "HSM card data encryption",
+    "created_at": "2024-02-03T10:12:48Z",
+    "rotation_interval_days": 90,
+    "location": "hashicorp://payments-kv/kv/data/payments/visa-tokenization",
+    "compliance": {
+      "pci_scope": "cardholder-data",
+      "nist_classification": "secret"
+    },
+    "tags": [
+      "hsm",
+      "tokenization",
+      "pci"
+    ]
+  },
+  {
+    "key_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "alias": "internal-api-auth",
+    "environment": "staging",
+    "owner": "api-gateway-team@tecro",
+    "purpose": "JWT signing for internal service-to-service communication",
+    "created_at": "2024-01-20T14:30:00Z",
+    "rotation_interval_days": 365,
+    "location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "confidential"
+    },
+    "tags": [
+      "jwt",
+      "auth",
+      "api-gateway",
+      "staging"
+    ]
+  }
+]

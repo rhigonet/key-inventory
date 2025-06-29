@@ -4,14 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key Inventory</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        #keys-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .key-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 1rem;
+            width: 300px;
+        }
+        #filters {
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
     <h1>Key Inventory</h1>
-    <ul>
-        <li>00112233-4455-6677-8899-aabbccddeeff.yaml</li>
-        <li>42b7a3d1-f2e4-4a1b-8c8a-1234567890ab.yaml</li>
-        <li>a1b2c3d4-e5f6-7890-1234-567890abcdef.yaml</li>
-        <li>f47ac10b-58cc-4372-a567-0e02b2c3d479.yaml</li>
-    </ul>
+    <div id="filters">
+        <input type="text" id="search" placeholder="Search by alias, owner, or purpose...">
+        <select id="environment-filter">
+            <option value="">All Environments</option>
+        </select>
+    </div>
+    <div id="keys-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const keysContainer = document.getElementById('keys-container');
+            const searchInput = document.getElementById('search');
+            const environmentFilter = document.getElementById('environment-filter');
+            let keys = [];
+
+            fetch('keys.json')
+                .then(response => response.json())
+                .then(data => {
+                    keys = data;
+                    populateEnvironments(keys);
+                    renderKeys(keys);
+                });
+
+            function populateEnvironments(keys) {
+                const environments = [...new Set(keys.map(key => key.environment))];
+                environments.forEach(env => {
+                    const option = document.createElement('option');
+                    option.value = env;
+                    option.textContent = env;
+                    environmentFilter.appendChild(option);
+                });
+            }
+
+            function renderKeys(keysToRender) {
+                keysContainer.innerHTML = '';
+                keysToRender.forEach(key => {
+                    const keyCard = document.createElement('div');
+                    keyCard.className = 'key-card';
+                    keyCard.innerHTML = `
+                        <h3>${key.alias}</h3>
+                        <p><strong>Owner:</strong> ${key.owner}</p>
+                        <p><strong>Environment:</strong> ${key.environment}</p>
+                        <p><strong>Purpose:</strong> ${key.purpose}</p>
+                        <p><strong>Created At:</strong> ${new Date(key.created_at).toLocaleDateString()}</p>
+                        <p><strong>Rotation (days):</strong> ${key.rotation_interval_days}</p>
+                        <p><strong>Location:</strong> ${key.location}</p>
+                        <p><strong>PCI Scope:</strong> ${key.compliance.pci_scope}</p>
+                        <p><strong>NIST Classification:</strong> ${key.compliance.nist_classification}</p>
+                        <p><strong>Tags:</strong> ${key.tags.join(', ')}</p>
+                    `;
+                    keysContainer.appendChild(keyCard);
+                });
+            }
+
+            function filterKeys() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedEnvironment = environmentFilter.value;
+
+                const filteredKeys = keys.filter(key => {
+                    const matchesSearch = 
+                        key.alias.toLowerCase().includes(searchTerm) ||
+                        key.owner.toLowerCase().includes(searchTerm) ||
+                        key.purpose.toLowerCase().includes(searchTerm);
+                    
+                    const matchesEnvironment = selectedEnvironment ? key.environment === selectedEnvironment : true;
+
+                    return matchesSearch && matchesEnvironment;
+                });
+
+                renderKeys(filteredKeys);
+            }
+
+            searchInput.addEventListener('input', filterKeys);
+            environmentFilter.addEventListener('change', filterKeys);
+        });
+    </script>
 </body>
 </html>
