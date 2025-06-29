@@ -1,0 +1,13 @@
+# inventory/42b7a3d1-f2e4-4a1b-8c8a-1234567890ab.yaml
+key_id: 42b7a3d1-f2e4-4a1b-8c8a-1234567890ab
+alias: visa-tokenization
+environment: prod
+owner: payments-platform@tecro
+purpose: HSM card data encryption
+created_at: "2024-02-03T10:12:48Z"
+rotation_interval_days: 90
+location: "hashicorp://payments-kv/kv/data/payments/visa-tokenization"
+compliance:
+  pci_scope: cardholder-data
+  nist_classification: secret
+tags: [hsm, tokenization, pci]

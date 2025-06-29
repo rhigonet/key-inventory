@@ -1,0 +1,13 @@
+# inventory/f47ac10b-58cc-4372-a567-0e02b2c3d479.yaml
+key_id: f47ac10b-58cc-4372-a567-0e02b2c3d479
+alias: mastercard-encryption
+environment: prod
+owner: fraud-detection@tecro
+purpose: Real-time transaction signing
+created_at: "2023-11-15T09:00:00Z"
+rotation_interval_days: 180
+location: "gcp-kms://projects/tecro-prod/locations/us-central1/keyRings/fraud-keys/cryptoKeys/mastercard-key"
+compliance:
+  pci_scope: none
+  nist_classification: top-secret
+tags: [mastercard, signing, fraud-detection]
