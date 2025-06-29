@@ -1,0 +1,12 @@
+key_id: a1c263af-7b95-4d3e-8450-81c4b8ba9123
+alias: jwt-auth-signing
+environment: stage
+owner: security@tecro
+purpose: JWT signing key for auth tokens
+created_at: "2025-06-29T21:12:00Z"
+rotation_interval_days: 60
+location: "azure-kv://stage-kv/keys/jwt-auth-signing/123456"
+compliance:
+  pci_scope: out-of-scope
+  nist_classification: secret
+tags: [jwt, signing, auth, azure]
