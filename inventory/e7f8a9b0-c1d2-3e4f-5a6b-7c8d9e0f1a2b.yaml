@@ -1,0 +1,12 @@
+key_id: e7f8a9b0-c1d2-3e4f-5a6b-7c8d9e0f1a2b
+alias: amex-tokenization-prod
+environment: prod
+owner: payments-platform@tecro
+purpose: American Express card tokenization
+created_at: "2024-03-10T12:00:00Z"
+rotation_interval_days: 60
+location: "azure-key-vault://tecro-prod-vault.vault.azure.net/keys/amex-token-key"
+compliance:
+  pci_scope: cardholder-data
+  nist_classification: top-secret
+tags: [amex, tokenization, pci, prod]

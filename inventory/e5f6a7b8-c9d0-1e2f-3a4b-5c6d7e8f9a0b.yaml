@@ -1,0 +1,12 @@
+key_id: e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b
+alias: reporting-encryption-stage
+environment: staging
+owner: analytics-team@tecro
+purpose: Financial reporting data encryption
+created_at: "2024-03-22T07:00:00Z"
+rotation_interval_days: 180
+location: "aws-kms://arn:aws:kms:us-west-2:123456789012:key/e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b"
+compliance:
+  pci_scope: none
+  nist_classification: confidential
+tags: [reporting, encryption, analytics, staging]

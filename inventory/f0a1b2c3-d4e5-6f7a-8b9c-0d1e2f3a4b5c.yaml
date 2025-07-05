@@ -1,0 +1,12 @@
+key_id: f0a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c
+alias: logs-encryption-prod
+environment: prod
+owner: logging-team@tecro
+purpose: Application logs encryption for compliance
+created_at: "2024-02-28T11:30:00Z"
+rotation_interval_days: 730
+location: "gcp-kms://projects/tecro-prod/locations/us-east1/keyRings/logging-keys/cryptoKeys/logs-encryption"
+compliance:
+  pci_scope: out-of-scope
+  nist_classification: confidential
+tags: [logs, encryption, compliance, prod]

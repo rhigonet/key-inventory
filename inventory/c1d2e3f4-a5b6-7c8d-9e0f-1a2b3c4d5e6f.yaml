@@ -1,0 +1,12 @@
+key_id: c1d2e3f4-a5b6-7c8d-9e0f-1a2b3c4d5e6f
+alias: backup-encryption-dev
+environment: dev
+owner: devops@tecro
+purpose: Database backup encryption for development environment
+created_at: "2024-06-01T08:15:00Z"
+rotation_interval_days: 180
+location: "gcp-kms://projects/tecro-dev/locations/us-central1/keyRings/backup-keys/cryptoKeys/backup-dev"
+compliance:
+  pci_scope: none
+  nist_classification: internal
+tags: [backup, encryption, database, dev]

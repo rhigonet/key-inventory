@@ -1,0 +1,12 @@
+key_id: d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a
+alias: webhook-signing-stage
+environment: staging
+owner: integrations@tecro
+purpose: HMAC signing for webhook payloads
+created_at: "2024-04-20T16:45:00Z"
+rotation_interval_days: 120
+location: "hashicorp://integrations-kv/kv/data/webhooks/signing-key"
+compliance:
+  pci_scope: none
+  nist_classification: confidential
+tags: [webhook, signing, hmac, staging]
