@@ -386,27 +386,109 @@
             border-radius: 4px;
         }
         
-        .github-setup {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
+        .steps-container {
+            margin: 1rem 0;
+        }
+        
+        .step {
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .step-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .step-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary-color);
+        }
+        
+        .copy-text {
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.75rem;
+            margin: 0.5rem 0;
+            word-break: break-all;
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .copy-btn:hover {
+            background: var(--secondary-color);
+        }
+        
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
             border-radius: 8px;
             padding: 1rem;
             margin: 1rem 0;
         }
         
-        .github-setup h4 {
-            color: #92400e;
+        .info-box h4 {
+            color: #1e40af;
             margin-bottom: 0.5rem;
         }
         
-        .github-setup p {
-            color: #78350f;
+        .info-box p {
+            color: #1e3a8a;
             font-size: 0.875rem;
-        }
-        
-        .github-setup a {
-            color: #92400e;
-            text-decoration: underline;
         }
         
         .rotation-warning {
@@ -509,26 +591,82 @@
                     <p><strong>File:</strong> <code id="deleteKeyFile"></code></p>
                 </div>
                 
-                <div class="github-setup">
-                    <h4>🔧 GitHub Setup Required</h4>
-                    <p>This feature requires a GitHub Personal Access Token with repository access. 
-                    <a href="https://github.com/settings/tokens" target="_blank">Generate one here</a> 
-                    with 'repo' scope permissions.</p>
-                </div>
-                
-                <div style="margin-top: 1rem;">
-                    <label for="githubToken" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">GitHub Personal Access Token:</label>
-                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                <div class="info-box">
+                    <h4>📝 How This Works</h4>
+                    <p>This will guide you through GitHub's web interface to safely delete the key. You'll create a branch, delete the file, and submit a pull request for team review.</p>
                 </div>
                 
                 <div style="margin-top: 1rem;">
                     <label for="deleteReason" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Reason for deletion:</label>
                     <textarea id="deleteReason" placeholder="e.g., Key retired due to service decommissioning" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; min-height: 80px; resize: vertical;"></textarea>
                 </div>
+                
+                <div class="steps-container" id="deleteSteps" style="display: none;">
+                    <div class="step">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <div class="step-title">Create a new branch</div>
+                        </div>
+                        <div class="step-description">
+                            Create a dedicated branch for this key deletion to keep changes isolated.
+                        </div>
+                        <div class="step-actions">
+                            <a id="createBranchLink" href="#" target="_blank" class="btn btn-primary">
+                                🌱 Create Branch on GitHub
+                            </a>
+                        </div>
+                        <div class="copy-text">
+                            Branch name: <span id="branchName"></span>
+                            <button class="copy-btn" onclick="copyToClipboard('branchName')">Copy</button>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <div class="step-title">Delete the key file</div>
+                        </div>
+                        <div class="step-description">
+                            Navigate to the key file in your new branch and delete it.
+                        </div>
+                        <div class="step-actions">
+                            <a id="deleteFileLink" href="#" target="_blank" class="btn btn-danger">
+                                🗑️ Delete File on GitHub
+                            </a>
+                        </div>
+                        <div class="copy-text">
+                            Commit message: <span id="commitMessage"></span>
+                            <button class="copy-btn" onclick="copyToClipboard('commitMessage')">Copy</button>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            <div class="step-title">Create pull request</div>
+                        </div>
+                        <div class="step-description">
+                            Submit a pull request to merge your deletion branch into main.
+                        </div>
+                        <div class="step-actions">
+                            <a id="createPRLink" href="#" target="_blank" class="btn btn-primary">
+                                📝 Create Pull Request
+                            </a>
+                        </div>
+                        <div class="copy-text">
+                            PR title: <span id="prTitle"></span>
+                            <button class="copy-btn" onclick="copyToClipboard('prTitle')">Copy</button>
+                        </div>
+                        <div class="copy-text" style="margin-top: 0.5rem;">
+                            PR description: <span id="prDescription"></span>
+                            <button class="copy-btn" onclick="copyToClipboard('prDescription')">Copy</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="hideDeleteModal()">Cancel</button>
-                <button class="btn btn-danger" onclick="createDeletePR()">Create Delete PR</button>
+                <button class="btn btn-primary" onclick="generateDeleteSteps()">Generate GitHub Steps</button>
             </div>
         </div>
     </div>
@@ -705,8 +843,8 @@
         function hideDeleteModal() {
             document.getElementById('deleteModal').style.display = 'none';
             currentDeleteKey = null;
-            document.getElementById('githubToken').value = '';
             document.getElementById('deleteReason').value = '';
+            document.getElementById('deleteSteps').style.display = 'none';
         }
         
         // Close modal when clicking outside
@@ -717,140 +855,65 @@
             }
         }
         
-        async function createDeletePR() {
-            const token = document.getElementById('githubToken').value.trim();
+        function generateDeleteSteps() {
             const reason = document.getElementById('deleteReason').value.trim();
-            
-            if (!token) {
-                alert('Please provide a GitHub Personal Access Token');
-                return;
-            }
             
             if (!reason) {
                 alert('Please provide a reason for deletion');
                 return;
             }
             
-            const deleteButton = document.querySelector('.modal-actions .btn-danger');
-            deleteButton.disabled = true;
-            deleteButton.textContent = 'Creating PR...';
-            
-            try {
-                const result = await createDeletePullRequest(token, currentDeleteKey.id, currentDeleteKey.alias, reason);
-                
-                if (result.success) {
-                    alert(`Pull request created successfully! PR #${result.prNumber}\n\nURL: ${result.prUrl}`);
-                    hideDeleteModal();
-                } else {
-                    alert(`Error creating pull request: ${result.error}`);
-                }
-            } catch (error) {
-                alert(`Error: ${error.message}`);
-            } finally {
-                deleteButton.disabled = false;
-                deleteButton.textContent = 'Create Delete PR';
-            }
-        }
-        
-        async function createDeletePullRequest(token, keyId, keyAlias, reason) {
-            const owner = 'rhigonet';
-            const repo = 'key-inventory';
+            const keyId = currentDeleteKey.id;
+            const keyAlias = currentDeleteKey.alias;
             const branchName = `delete-key-${keyId}`;
             const fileName = `inventory/${keyId}.yaml`;
             
-            const headers = {
-                'Authorization': `token ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/vnd.github.v3+json'
-            };
+            // Generate URLs and text content
+            const owner = 'rhigonet';
+            const repo = 'key-inventory';
             
-            try {
-                // Get the main branch SHA
-                const mainBranch = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/main`, {
-                    headers
-                });
+            // Step 1: Create branch via GitHub's new file interface
+            const createBranchUrl = `https://github.com/${owner}/${repo}/new/main?filename=DELETE_${keyId}.md&value=${encodeURIComponent('This file is temporary. Delete it after creating the branch.')}`;
+            document.getElementById('createBranchLink').href = createBranchUrl;
+            document.getElementById('branchName').textContent = branchName;
+            
+            // Step 2: Delete file (first navigate to the branch, then to the file)
+            const deleteFileUrl = `https://github.com/${owner}/${repo}/blob/${branchName}/${fileName}`;
+            document.getElementById('deleteFileLink').href = deleteFileUrl;
+            const commitMessage = `feat: remove key ${keyAlias} (${keyId})\n\nReason: ${reason}`;
+            document.getElementById('commitMessage').textContent = commitMessage;
+            
+            // Step 3: Create PR
+            const createPRUrl = `https://github.com/${owner}/${repo}/compare/main...${branchName}?quick_pull=1`;
+            document.getElementById('createPRLink').href = createPRUrl;
+            const prTitle = `feat: remove cryptographic key ${keyAlias}`;
+            document.getElementById('prTitle').textContent = prTitle;
+            
+            const prDescription = `## Key Deletion Request\n\n**Key ID:** \`${keyId}\`\n**Alias:** \`${keyAlias}\`\n**File:** \`${fileName}\`\n\n**Reason for deletion:**\n${reason}\n\n---\n\n⚠️ **Important:** This PR will permanently remove the cryptographic key from the inventory. Please review carefully before merging.\n\n**Review Checklist:**\n- [ ] Confirm the key is no longer in use\n- [ ] Verify proper key retirement procedures were followed\n- [ ] Ensure compliance requirements are met\n- [ ] Document the deletion in security logs\n\n*This PR was created via the Key Inventory Management interface.*`;
+            document.getElementById('prDescription').textContent = prDescription;
+            
+            // Show the steps
+            document.getElementById('deleteSteps').style.display = 'block';
+        }
+        
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Visual feedback
+                const button = element.nextElementSibling;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#16a34a';
                 
-                if (!mainBranch.ok) {
-                    throw new Error('Failed to get main branch information');
-                }
-                
-                const mainData = await mainBranch.json();
-                const mainSha = mainData.object.sha;
-                
-                // Create new branch
-                const createBranch = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs`, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({
-                        ref: `refs/heads/${branchName}`,
-                        sha: mainSha
-                    })
-                });
-                
-                if (!createBranch.ok) {
-                    const errorData = await createBranch.json();
-                    throw new Error(`Failed to create branch: ${errorData.message}`);
-                }
-                
-                // Get file SHA for deletion
-                const fileInfo = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${fileName}?ref=${branchName}`, {
-                    headers
-                });
-                
-                if (!fileInfo.ok) {
-                    throw new Error('Failed to get file information');
-                }
-                
-                const fileData = await fileInfo.json();
-                const fileSha = fileData.sha;
-                
-                // Delete the file
-                const deleteFile = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${fileName}`, {
-                    method: 'DELETE',
-                    headers,
-                    body: JSON.stringify({
-                        message: `feat: remove key ${keyAlias} (${keyId})\n\nReason: ${reason}`,
-                        sha: fileSha,
-                        branch: branchName
-                    })
-                });
-                
-                if (!deleteFile.ok) {
-                    const errorData = await deleteFile.json();
-                    throw new Error(`Failed to delete file: ${errorData.message}`);
-                }
-                
-                // Create pull request
-                const createPR = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({
-                        title: `feat: remove cryptographic key ${keyAlias}`,
-                        head: branchName,
-                        base: 'main',
-                        body: `## Key Deletion Request\n\n**Key ID:** \`${keyId}\`\n**Alias:** \`${keyAlias}\`\n**File:** \`${fileName}\`\n\n**Reason for deletion:**\n${reason}\n\n---\n\n⚠️ **Important:** This PR will permanently remove the cryptographic key from the inventory. Please review carefully before merging.\n\n**Review Checklist:**\n- [ ] Confirm the key is no longer in use\n- [ ] Verify proper key retirement procedures were followed\n- [ ] Ensure compliance requirements are met\n- [ ] Document the deletion in security logs\n\n*This PR was created automatically via the Key Inventory Management interface.*`
-                    })
-                });
-                
-                if (!createPR.ok) {
-                    const errorData = await createPR.json();
-                    throw new Error(`Failed to create pull request: ${errorData.message}`);
-                }
-                
-                const prData = await createPR.json();
-                
-                return {
-                    success: true,
-                    prNumber: prData.number,
-                    prUrl: prData.html_url
-                };
-                
-            } catch (error) {
-                return {
-                    success: false,
-                    error: error.message
-                };
-            }
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy to clipboard');
+            });
         }
     </script>
 </body>
