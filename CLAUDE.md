@@ -18,7 +18,23 @@ Key inventory is a open source project that I'm building to help companies in th
 ```bash
 python build-data.py
 ```
-This script reads all YAML files from the `inventory/` directory and generates `docs/keys.json` for the web interface.
+This enhanced script reads all YAML files from the `inventory/` directory, validates them against a comprehensive schema, and generates `docs/keys.json` for the web interface.
+
+**Enhanced features:**
+- Comprehensive schema validation with detailed error reporting
+- Duplicate detection for key IDs and aliases
+- Data normalization and consistency checks
+- Build statistics and summary reporting
+- Automatic backup of previous builds
+- Verbose logging and debugging options
+
+**Command-line options:**
+```bash
+python build-data.py --help                    # Show all options
+python build-data.py --dry-run --verbose       # Validate without output
+python build-data.py --include-metadata        # Include build statistics
+python build-data.py --no-backup              # Skip backup creation
+```
 
 ### Serve the web interface locally
 ```bash
