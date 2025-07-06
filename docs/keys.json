@@ -1,1285 +1,1226 @@
-{
-  "metadata": {
-    "build_timestamp": "2025-07-06T14:46:07.172464",
-    "schema_version": "2.0",
-    "total_keys": 15,
-    "statistics": {
-      "by_environment": {
-        "dev": 4,
-        "prod": 6,
-        "staging": 5
-      },
-      "by_compliance": {
-        "internal": 4,
-        "secret": 4,
-        "confidential": 5,
-        "top-secret": 2
-      },
-      "by_key_type": {
-        "symmetric": 12,
-        "jwt": 1,
-        "rsa": 1,
-        "ec": 1
-      },
-      "by_key_store": {
-        "azure-kv": 4,
-        "hashicorp-vault": 3,
-        "aws-kms": 4,
-        "custom": 4
-      },
-      "by_lifecycle_status": {
-        "active": 15
-      },
-      "by_risk_assessment": {
-        "low": 4,
-        "critical": 5,
-        "medium": 4,
-        "high": 2
-      },
-      "by_compliance_status": {
-        "compliant": 15
-      },
-      "schema_usage": {
-        "enhanced_schema_v2": 15,
-        "legacy_schema_v1": 0
-      },
-      "totals": {
-        "total_files_processed": 15,
-        "valid_keys": 15,
-        "invalid_keys": 0,
-        "duplicate_keys": 0
-      }
+[
+  {
+    "key_id": "a1c263af-7b95-4d3e-8450-81c4b8ba9123",
+    "alias": "jwt-auth-signing",
+    "environment": "staging",
+    "owner": "security@tecro",
+    "purpose": "JWT signing key for authentication tokens in staging",
+    "created_at": "2025-06-29T21:12:00Z",
+    "rotation_interval_days": 60,
+    "location": "azure-kv://stage-kv/keys/jwt-auth-signing/123456",
+    "compliance": {
+      "pci_scope": "out-of-scope",
+      "nist_classification": "secret",
+      "sox_applicable": false,
+      "gdpr_applicable": true,
+      "retention_period_days": 1825
     },
-    "build_info": {
-      "errors": 0,
-      "warnings": 0,
-      "success_rate": 100.0
+    "lifecycle": {
+      "status": "active",
+      "created_by": "security-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2025-06-29T21:12:00Z",
+      "last_rotated_at": "2025-06-29T21:12:00Z",
+      "next_rotation_due": "2025-08-28T21:12:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "security@tecro"
+    },
+    "technical": {
+      "key_type": "rsa",
+      "key_size": 2048,
+      "algorithm": "RS256",
+      "encoding": "pkcs8",
+      "key_store_type": "azure-kv",
+      "high_availability": true,
+      "backup_location": "azure-kv://stage-kv-backup/keys/jwt-auth-signing-backup/123456"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "auth-service",
+        "jwt-validator"
+      ],
+      "related_keys": [],
+      "environments": [
+        "staging"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-SECURITY-001",
+      "project_code": "PROJ-AUTH-2025"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2025-06-29T21:12:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/security/jwt-signing",
+      "ticket_reference": "SEC-1357",
+      "business_justification": "Secure JWT token signing for authentication system",
+      "risk_assessment": "high"
+    },
+    "tags": [
+      "jwt",
+      "signing",
+      "auth",
+      "azure",
+      "staging"
+    ],
+    "custom_fields": {
+      "business_owner": "security-product@tecro",
+      "disaster_recovery_tier": "tier-2",
+      "encryption_at_rest": true
     }
   },
-  "keys": [
-    {
-      "key_id": "a1c263af-7b95-4d3e-8450-81c4b8ba9123",
-      "alias": "jwt-auth-signing",
-      "environment": "staging",
-      "owner": "security@tecro",
-      "purpose": "JWT signing key for authentication tokens in staging",
-      "created_at": "2025-06-29T21:12:00Z",
-      "rotation_interval_days": 60,
-      "location": "azure-kv://stage-kv/keys/jwt-auth-signing/123456",
-      "compliance": {
-        "pci_scope": "out-of-scope",
-        "nist_classification": "secret",
-        "sox_applicable": false,
-        "gdpr_applicable": true,
-        "retention_period_days": 1825
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "security-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2025-06-29T21:12:00Z",
-        "last_rotated_at": "2025-06-29T21:12:00Z",
-        "next_rotation_due": "2025-08-28T21:12:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "security@tecro"
-      },
-      "technical": {
-        "key_type": "rsa",
-        "key_size": 2048,
-        "algorithm": "RS256",
-        "encoding": "pkcs8",
-        "key_store_type": "azure-kv",
-        "high_availability": true,
-        "backup_location": "azure-kv://stage-kv-backup/keys/jwt-auth-signing-backup/123456"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "auth-service",
-          "jwt-validator"
-        ],
-        "related_keys": [],
-        "environments": [
-          "staging"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-SECURITY-001",
-        "project_code": "PROJ-AUTH-2025"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2025-06-29T21:12:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/security/jwt-signing",
-        "ticket_reference": "SEC-1357",
-        "business_justification": "Secure JWT token signing for authentication system",
-        "risk_assessment": "high"
-      },
-      "tags": [
-        "jwt",
-        "signing",
-        "auth",
-        "azure",
-        "staging"
-      ],
-      "custom_fields": {
-        "business_owner": "security-product@tecro",
-        "disaster_recovery_tier": "tier-2",
-        "encryption_at_rest": true
-      }
+  {
+    "key_id": "a3b4c5d6-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "alias": "api-rate-limit-dev",
+    "environment": "dev",
+    "owner": "platform-team@tecro",
+    "purpose": "API rate limiting token encryption for development environment",
+    "created_at": "2024-06-15T14:20:00Z",
+    "rotation_interval_days": 90,
+    "location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/a3b4c5d6-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "internal",
+      "sox_applicable": false,
+      "gdpr_applicable": false,
+      "retention_period_days": 365
     },
-    {
-      "key_id": "a3b4c5d6-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-      "alias": "api-rate-limit-dev",
-      "environment": "dev",
-      "owner": "platform-team@tecro",
-      "purpose": "API rate limiting token encryption for development environment",
-      "created_at": "2024-06-15T14:20:00Z",
-      "rotation_interval_days": 90,
-      "location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/a3b4c5d6-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "internal",
-        "sox_applicable": false,
-        "gdpr_applicable": false,
-        "retention_period_days": 365
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "platform-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-06-15T14:20:00Z",
-        "last_rotated_at": "2024-06-15T14:20:00Z",
-        "next_rotation_due": "2024-09-13T14:20:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "platform-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "aws-kms",
-        "high_availability": false,
-        "backup_location": ""
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "api-gateway",
-          "rate-limiter"
-        ],
-        "related_keys": [],
-        "environments": [
-          "dev"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": false,
-        "alerting_enabled": false,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": false,
-        "cost_center": "CC-PLATFORM-001",
-        "project_code": "PROJ-PLATFORM-2024"
-      },
-      "audit": {
-        "access_logs_enabled": false,
-        "usage_tracking_enabled": false,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-06-15T14:20:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/platform/rate-limiting",
-        "ticket_reference": "PLATFORM-4680",
-        "business_justification": "Development API rate limiting for testing and validation",
-        "risk_assessment": "low"
-      },
-      "tags": [
-        "api",
-        "rate-limiting",
-        "dev",
-        "platform",
-        "testing"
-      ],
-      "custom_fields": {
-        "business_owner": "platform-product@tecro",
-        "disaster_recovery_tier": "tier-3",
-        "encryption_at_rest": true
-      }
+    "lifecycle": {
+      "status": "active",
+      "created_by": "platform-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-06-15T14:20:00Z",
+      "last_rotated_at": "2024-06-15T14:20:00Z",
+      "next_rotation_due": "2024-09-13T14:20:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "platform-team@tecro"
     },
-    {
-      "key_id": "d2e3f4a5-b6c7-8d9e-0f1a-2b3c4d5e6f7a",
-      "alias": "session-encryption-dev",
-      "environment": "dev",
-      "owner": "auth-team@tecro",
-      "purpose": "User session data encryption for development environment",
-      "created_at": "2024-06-10T15:30:00Z",
-      "rotation_interval_days": 60,
-      "location": "gcp-kms://projects/tecro-dev/locations/us-west1/keyRings/session-keys/cryptoKeys/session-dev",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "internal",
-        "sox_applicable": false,
-        "gdpr_applicable": true,
-        "retention_period_days": 365
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "auth-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-06-10T15:30:00Z",
-        "last_rotated_at": "2024-06-10T15:30:00Z",
-        "next_rotation_due": "2024-08-09T15:30:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "auth-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "custom",
-        "high_availability": false,
-        "backup_location": ""
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "auth-service",
-          "session-manager"
-        ],
-        "related_keys": [],
-        "environments": [
-          "dev"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": false,
-        "alerting_enabled": false,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": false,
-        "cost_center": "CC-DEV-001",
-        "project_code": "PROJ-AUTH-2024"
-      },
-      "audit": {
-        "access_logs_enabled": false,
-        "usage_tracking_enabled": false,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-06-10T15:30:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/auth/session-encryption",
-        "ticket_reference": "AUTH-3456",
-        "business_justification": "Development environment session security testing",
-        "risk_assessment": "low"
-      },
-      "tags": [
-        "session",
-        "encryption",
-        "auth",
-        "dev",
-        "testing"
-      ],
-      "custom_fields": {
-        "business_owner": "auth-product@tecro",
-        "disaster_recovery_tier": "tier-3",
-        "encryption_at_rest": true
-      }
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "aws-kms",
+      "high_availability": false,
+      "backup_location": ""
     },
-    {
-      "key_id": "c1d2e3f4-a5b6-7c8d-9e0f-1a2b3c4d5e6f",
-      "alias": "backup-encryption-dev",
-      "environment": "dev",
-      "owner": "devops@tecro",
-      "purpose": "Database backup encryption for development environment",
-      "created_at": "2024-06-01T08:15:00Z",
-      "rotation_interval_days": 180,
-      "location": "gcp-kms://projects/tecro-dev/locations/us-central1/keyRings/backup-keys/cryptoKeys/backup-dev",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "internal",
-        "sox_applicable": false,
-        "gdpr_applicable": false,
-        "retention_period_days": 365
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "devops-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-06-01T08:15:00Z",
-        "last_rotated_at": "2024-06-01T08:15:00Z",
-        "next_rotation_due": "2024-11-28T08:15:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "devops@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "custom",
-        "high_availability": false,
-        "backup_location": ""
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "backup-service",
-          "database-service"
-        ],
-        "related_keys": [],
-        "environments": [
-          "dev"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": false,
-        "alerting_enabled": false,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": false,
-        "cost_center": "CC-DEV-001",
-        "project_code": "PROJ-DEVOPS-2024"
-      },
-      "audit": {
-        "access_logs_enabled": false,
-        "usage_tracking_enabled": false,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-06-01T08:15:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/devops/backup-encryption",
-        "ticket_reference": "DEVOPS-1975",
-        "business_justification": "Development database backup encryption for testing",
-        "risk_assessment": "low"
-      },
-      "tags": [
-        "backup",
-        "encryption",
-        "database",
-        "dev",
-        "testing"
-      ],
-      "custom_fields": {
-        "business_owner": "devops-product@tecro",
-        "disaster_recovery_tier": "tier-3",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "b6c7d8e9-f0a1-2b3c-4d5e-6f7a8b9c0d1e",
-      "alias": "customer-pii-encryption-stage",
-      "environment": "staging",
-      "owner": "privacy-team@tecro",
-      "purpose": "Customer PII data encryption for staging environment testing",
-      "created_at": "2024-05-25T09:45:00Z",
-      "rotation_interval_days": 30,
-      "location": "hashicorp://privacy-kv/kv/data/customer/pii-encryption",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "secret",
-        "sox_applicable": false,
-        "gdpr_applicable": true,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "privacy-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-05-25T09:45:00Z",
-        "last_rotated_at": "2024-05-25T09:45:00Z",
-        "next_rotation_due": "2024-06-24T09:45:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "privacy-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "hashicorp-vault",
-        "high_availability": true,
-        "backup_location": "hashicorp://privacy-kv-backup/kv/data/customer/pii-encryption-backup"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "privacy-service",
-          "customer-data-processor"
-        ],
-        "related_keys": [],
-        "environments": [
-          "staging"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-PRIVACY-001",
-        "project_code": "PROJ-PRIVACY-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-05-25T09:45:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/privacy/pii-encryption",
-        "ticket_reference": "PRIVACY-8642",
-        "business_justification": "GDPR-compliant customer PII protection for staging testing",
-        "risk_assessment": "critical"
-      },
-      "tags": [
-        "pii",
-        "encryption",
-        "privacy",
-        "staging",
-        "gdpr"
-      ],
-      "custom_fields": {
-        "business_owner": "privacy-product@tecro",
-        "disaster_recovery_tier": "tier-1",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "b8c9d0e1-f2a3-4b5c-6d7e-8f9a0b1c2d3e",
-      "alias": "s3-encryption-prod",
-      "environment": "prod",
-      "owner": "storage-team@tecro",
-      "purpose": "S3 bucket encryption for customer data in production",
-      "created_at": "2024-05-15T10:30:00Z",
-      "rotation_interval_days": 365,
-      "location": "aws-kms://arn:aws:kms:us-west-2:123456789012:key/b8c9d0e1-f2a3-4b5c-6d7e-8f9a0b1c2d3e",
-      "compliance": {
-        "pci_scope": "cardholder-data",
-        "nist_classification": "secret",
-        "sox_applicable": true,
-        "gdpr_applicable": true,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "storage-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-05-15T10:30:00Z",
-        "last_rotated_at": "2024-05-15T10:30:00Z",
-        "next_rotation_due": "2025-05-15T10:30:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "security-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "aws-kms",
-        "high_availability": true,
-        "backup_location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/backup-b8c9d0e1"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "s3-service",
-          "data-pipeline",
-          "backup-service"
-        ],
-        "related_keys": [],
-        "environments": [
-          "prod"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-STORAGE-001",
-        "project_code": "PROJ-STORAGE-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-05-15T10:30:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/storage/s3-encryption",
-        "ticket_reference": "STORAGE-9753",
-        "business_justification": "PCI and GDPR compliant customer data encryption in S3",
-        "risk_assessment": "critical"
-      },
-      "tags": [
-        "s3",
-        "encryption",
-        "storage",
-        "prod",
-        "pci",
-        "gdpr"
-      ],
-      "custom_fields": {
-        "business_owner": "storage-product@tecro",
-        "disaster_recovery_tier": "tier-1",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a",
-      "alias": "webhook-signing-stage",
-      "environment": "staging",
-      "owner": "integrations@tecro",
-      "purpose": "HMAC signing for webhook payloads in staging environment",
-      "created_at": "2024-04-20T16:45:00Z",
-      "rotation_interval_days": 120,
-      "location": "hashicorp://integrations-kv/kv/data/webhooks/signing-key",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "confidential",
-        "sox_applicable": false,
-        "gdpr_applicable": false,
-        "retention_period_days": 1095
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "integrations-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-04-20T16:45:00Z",
-        "last_rotated_at": "2024-04-20T16:45:00Z",
-        "next_rotation_due": "2024-08-18T16:45:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "integrations@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "HMAC-SHA256",
-        "encoding": "base64",
-        "key_store_type": "hashicorp-vault",
-        "high_availability": true,
-        "backup_location": "hashicorp://integrations-kv-backup/kv/data/webhooks/signing-key-backup"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "webhook-service",
-          "integration-api",
-          "event-processor"
-        ],
-        "related_keys": [],
-        "environments": [
-          "staging"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-INTEGRATIONS-001",
-        "project_code": "PROJ-WEBHOOK-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-04-20T16:45:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/integrations/webhook-signing",
-        "ticket_reference": "INT-5432",
-        "business_justification": "Secure webhook payload signing for third-party integrations",
-        "risk_assessment": "medium"
-      },
-      "tags": [
-        "webhook",
-        "signing",
-        "hmac",
-        "staging",
-        "integrations"
-      ],
-      "custom_fields": {
-        "business_owner": "integrations-product@tecro",
-        "disaster_recovery_tier": "tier-2",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "c9d0e1f2-a3b4-5c6d-7e8f-9a0b1c2d3e4f",
-      "alias": "file-storage-encryption-prod",
-      "environment": "prod",
-      "owner": "storage-team@tecro",
-      "purpose": "File storage encryption for document management system",
-      "created_at": "2024-04-05T13:15:00Z",
-      "rotation_interval_days": 365,
-      "location": "azure-key-vault://tecro-prod-vault.vault.azure.net/keys/file-storage-key",
-      "compliance": {
-        "pci_scope": "out-of-scope",
-        "nist_classification": "confidential",
-        "sox_applicable": true,
-        "gdpr_applicable": true,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "storage-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-04-05T13:15:00Z",
-        "last_rotated_at": "2024-04-05T13:15:00Z",
-        "next_rotation_due": "2025-04-05T13:15:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "storage-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "azure-kv",
-        "high_availability": true,
-        "backup_location": "azure-key-vault://tecro-backup-vault.vault.azure.net/keys/file-storage-backup"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "document-service",
-          "file-manager",
-          "content-api"
-        ],
-        "related_keys": [],
-        "environments": [
-          "prod"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-STORAGE-001",
-        "project_code": "PROJ-DOCS-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-04-05T13:15:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/storage/document-encryption",
-        "ticket_reference": "DOCS-8024",
-        "business_justification": "Document management system encryption for SOX compliance",
-        "risk_assessment": "medium"
-      },
-      "tags": [
-        "file-storage",
-        "encryption",
-        "documents",
-        "prod",
-        "sox"
-      ],
-      "custom_fields": {
-        "business_owner": "documents-product@tecro",
-        "disaster_recovery_tier": "tier-2",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b",
-      "alias": "reporting-encryption-stage",
-      "environment": "staging",
-      "owner": "analytics-team@tecro",
-      "purpose": "Financial reporting data encryption for staging environment",
-      "created_at": "2024-03-22T07:00:00Z",
-      "rotation_interval_days": 180,
-      "location": "aws-kms://arn:aws:kms:us-west-2:123456789012:key/e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "confidential",
-        "sox_applicable": true,
-        "gdpr_applicable": true,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "analytics-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-03-22T07:00:00Z",
-        "last_rotated_at": "2024-03-22T07:00:00Z",
-        "next_rotation_due": "2024-09-18T07:00:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "analytics-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "aws-kms",
-        "high_availability": true,
-        "backup_location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/backup-e5f6a7b8"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "reporting-service",
-          "analytics-pipeline"
-        ],
-        "related_keys": [],
-        "environments": [
-          "staging"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-ANALYTICS-001",
-        "project_code": "PROJ-ANALYTICS-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-03-22T07:00:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/analytics/reporting-encryption",
-        "ticket_reference": "ANALYTICS-7890",
-        "business_justification": "SOX-compliant financial reporting data protection",
-        "risk_assessment": "high"
-      },
-      "tags": [
-        "reporting",
-        "encryption",
-        "analytics",
-        "staging",
-        "financial"
-      ],
-      "custom_fields": {
-        "business_owner": "analytics-product@tecro",
-        "disaster_recovery_tier": "tier-2",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "e7f8a9b0-c1d2-3e4f-5a6b-7c8d9e0f1a2b",
-      "alias": "amex-tokenization-prod",
-      "environment": "prod",
-      "owner": "payments-platform@tecro",
-      "purpose": "American Express card tokenization for payment processing",
-      "created_at": "2024-03-10T12:00:00Z",
-      "rotation_interval_days": 60,
-      "location": "azure-key-vault://tecro-prod-vault.vault.azure.net/keys/amex-token-key",
-      "compliance": {
-        "pci_scope": "cardholder-data",
-        "nist_classification": "top-secret",
-        "sox_applicable": true,
-        "gdpr_applicable": false,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "payments-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-03-10T12:00:00Z",
-        "last_rotated_at": "2024-03-10T12:00:00Z",
-        "next_rotation_due": "2024-05-09T12:00:00Z",
-        "rotation_count": 1,
-        "emergency_contact": "security-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "azure-kv",
-        "high_availability": true,
-        "backup_location": "azure-key-vault://tecro-backup-vault.vault.azure.net/keys/amex-token-backup"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "payment-processor",
-          "amex-gateway",
-          "tokenization-service"
-        ],
-        "related_keys": [
-          "42b7a3d1-f2e4-4a1b-8c8a-1234567890ab"
-        ],
-        "environments": [
-          "prod"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-PAYMENTS-001",
-        "project_code": "PROJ-AMEX-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-03-10T12:00:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/payments/amex-tokenization",
-        "ticket_reference": "PAY-3691",
-        "business_justification": "PCI-compliant American Express card tokenization",
-        "risk_assessment": "critical"
-      },
-      "tags": [
-        "amex",
-        "tokenization",
-        "pci",
-        "prod",
-        "american-express"
-      ],
-      "custom_fields": {
-        "business_owner": "payments-product@tecro",
-        "disaster_recovery_tier": "tier-1",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "00112233-4455-6677-8899-aabbccddeeff",
-      "alias": "db-encryption-dev",
-      "environment": "dev",
-      "owner": "db-admins@tecro",
-      "purpose": "Encrypting sensitive columns in the development database",
-      "created_at": "2024-03-01T18:00:00Z",
-      "rotation_interval_days": 730,
-      "location": "azure-key-vault://tecro-dev-vault.vault.azure.net/keys/db-dev-key",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "internal",
-        "sox_applicable": false,
-        "gdpr_applicable": true,
-        "retention_period_days": 365
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "db-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-03-01T18:00:00Z",
-        "last_rotated_at": "2024-03-01T18:00:00Z",
-        "next_rotation_due": "2026-02-28T18:00:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "db-admins@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "azure-kv",
-        "high_availability": false,
-        "backup_location": ""
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "database-service",
-          "migration-tools"
-        ],
-        "related_keys": [],
-        "environments": [
-          "dev"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": false,
-        "alerting_enabled": false,
-        "auto_rotation_enabled": false,
-        "emergency_revocation_enabled": false,
-        "cost_center": "CC-DEV-001",
-        "project_code": "PROJ-DB-2024"
-      },
-      "audit": {
-        "access_logs_enabled": false,
-        "usage_tracking_enabled": false,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-03-01T18:00:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/database/encryption-dev",
-        "ticket_reference": "DB-2468",
-        "business_justification": "Development database column encryption for testing",
-        "risk_assessment": "low"
-      },
-      "tags": [
-        "database",
-        "encryption",
-        "dev",
-        "testing"
-      ],
-      "custom_fields": {
-        "business_owner": "database-product@tecro",
-        "disaster_recovery_tier": "tier-3",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "f0a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c",
-      "alias": "logs-encryption-prod",
-      "environment": "prod",
-      "owner": "logging-team@tecro",
-      "purpose": "Application logs encryption for compliance and audit trails",
-      "created_at": "2024-02-28T11:30:00Z",
-      "rotation_interval_days": 730,
-      "location": "gcp-kms://projects/tecro-prod/locations/us-east1/keyRings/logging-keys/cryptoKeys/logs-encryption",
-      "compliance": {
-        "pci_scope": "out-of-scope",
-        "nist_classification": "confidential",
-        "sox_applicable": true,
-        "gdpr_applicable": true,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "logging-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-02-28T11:30:00Z",
-        "last_rotated_at": "2024-02-28T11:30:00Z",
-        "next_rotation_due": "2026-02-27T11:30:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "logging-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "custom",
-        "high_availability": true,
-        "backup_location": "gcp-kms://projects/tecro-backup/locations/us-west1/keyRings/logging-backup/cryptoKeys/logs-backup"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "logging-service",
-          "audit-service",
-          "compliance-tracker"
-        ],
-        "related_keys": [],
-        "environments": [
-          "prod"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": false,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-INFRA-001",
-        "project_code": "PROJ-LOGGING-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-02-28T11:30:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/logging/encryption",
-        "ticket_reference": "LOG-7531",
-        "business_justification": "SOX and compliance-required audit log encryption",
-        "risk_assessment": "medium"
-      },
-      "tags": [
-        "logs",
-        "encryption",
-        "compliance",
-        "prod",
-        "audit",
-        "sox"
-      ],
-      "custom_fields": {
-        "business_owner": "logging-product@tecro",
-        "disaster_recovery_tier": "tier-2",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "42b7a3d1-f2e4-4a1b-8c8a-1234567890ab",
-      "alias": "visa-tokenization",
-      "environment": "prod",
-      "owner": "payments-platform@tecro",
-      "purpose": "HSM card data encryption for Visa payment processing",
-      "created_at": "2024-02-03T10:12:48Z",
-      "rotation_interval_days": 90,
-      "location": "hashicorp://payments-kv/kv/data/payments/visa-tokenization",
-      "compliance": {
-        "pci_scope": "cardholder-data",
-        "nist_classification": "secret",
-        "sox_applicable": true,
-        "gdpr_applicable": false,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "payments-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-02-03T10:12:48Z",
-        "last_rotated_at": "2024-02-03T10:12:48Z",
-        "next_rotation_due": "2024-05-03T10:12:48Z",
-        "rotation_count": 0,
-        "emergency_contact": "security-team@tecro"
-      },
-      "technical": {
-        "key_type": "symmetric",
-        "key_size": 256,
-        "algorithm": "AES-256-GCM",
-        "encoding": "base64",
-        "key_store_type": "hashicorp-vault",
-        "high_availability": true,
-        "backup_location": "hashicorp://payments-kv-backup/kv/data/payments/visa-tokenization"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "payment-processor",
-          "visa-gateway",
-          "tokenization-service"
-        ],
-        "related_keys": [],
-        "environments": [
-          "prod"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-PAYMENTS-001",
-        "project_code": "PROJ-PAY-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-02-03T10:12:48Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/payments/visa-tokenization",
-        "ticket_reference": "PAY-5678",
-        "business_justification": "PCI-compliant Visa payment card tokenization",
-        "risk_assessment": "critical"
-      },
-      "tags": [
-        "hsm",
-        "tokenization",
-        "pci",
-        "visa",
-        "production"
-      ],
-      "custom_fields": {
-        "business_owner": "payments-product@tecro",
-        "disaster_recovery_tier": "tier-1",
-        "encryption_at_rest": true
-      }
-    },
-    {
-      "key_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-      "alias": "internal-api-auth",
-      "environment": "staging",
-      "owner": "api-gateway-team@tecro",
-      "purpose": "JWT signing for internal service-to-service communication",
-      "created_at": "2024-01-20T14:30:00Z",
-      "rotation_interval_days": 365,
-      "location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/a1b2c3d4-e5f6-7890-1234-567890abcdef",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "confidential",
-        "sox_applicable": false,
-        "gdpr_applicable": true,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "api-gateway-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2024-01-20T14:30:00Z",
-        "last_rotated_at": "2024-01-20T14:30:00Z",
-        "next_rotation_due": "2025-01-20T14:30:00Z",
-        "rotation_count": 0,
-        "emergency_contact": "security-team@tecro"
-      },
-      "technical": {
-        "key_type": "jwt",
-        "key_size": 2048,
-        "algorithm": "RS256",
-        "encoding": "pkcs8",
-        "key_store_type": "aws-kms",
-        "high_availability": true,
-        "backup_location": "aws-kms://arn:aws:kms:us-west-2:123456789012:key/backup-a1b2c3d4"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "api-gateway",
-          "internal-services"
-        ],
-        "related_keys": [],
-        "environments": [
-          "staging"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-INFRA-001",
-        "project_code": "PROJ-API-2024"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2024-01-20T14:30:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/api-gateway/auth-keys",
-        "ticket_reference": "INFRA-1234",
-        "business_justification": "Required for secure internal service communication",
-        "risk_assessment": "medium"
-      },
-      "tags": [
-        "jwt",
-        "auth",
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
         "api-gateway",
-        "staging"
+        "rate-limiter"
       ],
-      "custom_fields": {
-        "business_owner": "api-gateway-product@tecro",
-        "disaster_recovery_tier": "tier-2",
-        "encryption_at_rest": true
-      }
+      "related_keys": [],
+      "environments": [
+        "dev"
+      ]
     },
-    {
-      "key_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-      "alias": "mastercard-encryption",
-      "environment": "prod",
-      "owner": "fraud-detection@tecro",
-      "purpose": "Real-time transaction signing for Mastercard fraud detection",
-      "created_at": "2023-11-15T09:00:00Z",
-      "rotation_interval_days": 180,
-      "location": "gcp-kms://projects/tecro-prod/locations/us-central1/keyRings/fraud-keys/cryptoKeys/mastercard-key",
-      "compliance": {
-        "pci_scope": "none",
-        "nist_classification": "top-secret",
-        "sox_applicable": true,
-        "gdpr_applicable": false,
-        "retention_period_days": 2555
-      },
-      "lifecycle": {
-        "status": "active",
-        "created_by": "fraud-team",
-        "approved_by": "key-inventory-admin",
-        "approved_at": "2023-11-15T09:00:00Z",
-        "last_rotated_at": "2023-11-15T09:00:00Z",
-        "next_rotation_due": "2024-05-13T09:00:00Z",
-        "rotation_count": 1,
-        "emergency_contact": "security-team@tecro"
-      },
-      "technical": {
-        "key_type": "ec",
-        "key_size": 256,
-        "algorithm": "ECDSA-P256",
-        "encoding": "pkcs8",
-        "key_store_type": "custom",
-        "high_availability": true,
-        "backup_location": "gcp-kms://projects/tecro-backup/locations/us-west1/keyRings/fraud-backup/cryptoKeys/mastercard-backup"
-      },
-      "relationships": {
-        "depends_on": [],
-        "used_by": [
-          "fraud-detection-service",
-          "mastercard-gateway",
-          "transaction-processor"
-        ],
-        "related_keys": [],
-        "environments": [
-          "prod"
-        ]
-      },
-      "operational": {
-        "monitoring_enabled": true,
-        "alerting_enabled": true,
-        "auto_rotation_enabled": true,
-        "emergency_revocation_enabled": true,
-        "cost_center": "CC-FRAUD-001",
-        "project_code": "PROJ-FRAUD-2023"
-      },
-      "audit": {
-        "access_logs_enabled": true,
-        "usage_tracking_enabled": true,
-        "compliance_scan_enabled": true,
-        "last_compliance_check": "2023-11-15T09:00:00Z",
-        "compliance_status": "compliant"
-      },
-      "metadata": {
-        "version": "2.0",
-        "documentation_url": "https://wiki.tecro.com/fraud/mastercard-signing",
-        "ticket_reference": "FRAUD-9012",
-        "business_justification": "Critical fraud detection for Mastercard transactions",
-        "risk_assessment": "critical"
-      },
-      "tags": [
-        "mastercard",
-        "signing",
-        "fraud-detection",
-        "production",
-        "high-security"
-      ],
-      "custom_fields": {
-        "business_owner": "fraud-product@tecro",
-        "disaster_recovery_tier": "tier-1",
-        "encryption_at_rest": true
-      }
+    "operational": {
+      "monitoring_enabled": false,
+      "alerting_enabled": false,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": false,
+      "cost_center": "CC-PLATFORM-001",
+      "project_code": "PROJ-PLATFORM-2024"
+    },
+    "audit": {
+      "access_logs_enabled": false,
+      "usage_tracking_enabled": false,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-06-15T14:20:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/platform/rate-limiting",
+      "ticket_reference": "PLATFORM-4680",
+      "business_justification": "Development API rate limiting for testing and validation",
+      "risk_assessment": "low"
+    },
+    "tags": [
+      "api",
+      "rate-limiting",
+      "dev",
+      "platform",
+      "testing"
+    ],
+    "custom_fields": {
+      "business_owner": "platform-product@tecro",
+      "disaster_recovery_tier": "tier-3",
+      "encryption_at_rest": true
     }
-  ]
-}
+  },
+  {
+    "key_id": "d2e3f4a5-b6c7-8d9e-0f1a-2b3c4d5e6f7a",
+    "alias": "session-encryption-dev",
+    "environment": "dev",
+    "owner": "auth-team@tecro",
+    "purpose": "User session data encryption for development environment",
+    "created_at": "2024-06-10T15:30:00Z",
+    "rotation_interval_days": 60,
+    "location": "gcp-kms://projects/tecro-dev/locations/us-west1/keyRings/session-keys/cryptoKeys/session-dev",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "internal",
+      "sox_applicable": false,
+      "gdpr_applicable": true,
+      "retention_period_days": 365
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "auth-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-06-10T15:30:00Z",
+      "last_rotated_at": "2024-06-10T15:30:00Z",
+      "next_rotation_due": "2024-08-09T15:30:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "auth-team@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "custom",
+      "high_availability": false,
+      "backup_location": ""
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "auth-service",
+        "session-manager"
+      ],
+      "related_keys": [],
+      "environments": [
+        "dev"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": false,
+      "alerting_enabled": false,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": false,
+      "cost_center": "CC-DEV-001",
+      "project_code": "PROJ-AUTH-2024"
+    },
+    "audit": {
+      "access_logs_enabled": false,
+      "usage_tracking_enabled": false,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-06-10T15:30:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/auth/session-encryption",
+      "ticket_reference": "AUTH-3456",
+      "business_justification": "Development environment session security testing",
+      "risk_assessment": "low"
+    },
+    "tags": [
+      "session",
+      "encryption",
+      "auth",
+      "dev",
+      "testing"
+    ],
+    "custom_fields": {
+      "business_owner": "auth-product@tecro",
+      "disaster_recovery_tier": "tier-3",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "c1d2e3f4-a5b6-7c8d-9e0f-1a2b3c4d5e6f",
+    "alias": "backup-encryption-dev",
+    "environment": "dev",
+    "owner": "devops@tecro",
+    "purpose": "Database backup encryption for development environment",
+    "created_at": "2024-06-01T08:15:00Z",
+    "rotation_interval_days": 180,
+    "location": "gcp-kms://projects/tecro-dev/locations/us-central1/keyRings/backup-keys/cryptoKeys/backup-dev",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "internal",
+      "sox_applicable": false,
+      "gdpr_applicable": false,
+      "retention_period_days": 365
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "devops-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-06-01T08:15:00Z",
+      "last_rotated_at": "2024-06-01T08:15:00Z",
+      "next_rotation_due": "2024-11-28T08:15:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "devops@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "custom",
+      "high_availability": false,
+      "backup_location": ""
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "backup-service",
+        "database-service"
+      ],
+      "related_keys": [],
+      "environments": [
+        "dev"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": false,
+      "alerting_enabled": false,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": false,
+      "cost_center": "CC-DEV-001",
+      "project_code": "PROJ-DEVOPS-2024"
+    },
+    "audit": {
+      "access_logs_enabled": false,
+      "usage_tracking_enabled": false,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-06-01T08:15:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/devops/backup-encryption",
+      "ticket_reference": "DEVOPS-1975",
+      "business_justification": "Development database backup encryption for testing",
+      "risk_assessment": "low"
+    },
+    "tags": [
+      "backup",
+      "encryption",
+      "database",
+      "dev",
+      "testing"
+    ],
+    "custom_fields": {
+      "business_owner": "devops-product@tecro",
+      "disaster_recovery_tier": "tier-3",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "b6c7d8e9-f0a1-2b3c-4d5e-6f7a8b9c0d1e",
+    "alias": "customer-pii-encryption-stage",
+    "environment": "staging",
+    "owner": "privacy-team@tecro",
+    "purpose": "Customer PII data encryption for staging environment testing",
+    "created_at": "2024-05-25T09:45:00Z",
+    "rotation_interval_days": 30,
+    "location": "hashicorp://privacy-kv/kv/data/customer/pii-encryption",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "secret",
+      "sox_applicable": false,
+      "gdpr_applicable": true,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "privacy-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-05-25T09:45:00Z",
+      "last_rotated_at": "2024-05-25T09:45:00Z",
+      "next_rotation_due": "2024-06-24T09:45:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "privacy-team@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "hashicorp-vault",
+      "high_availability": true,
+      "backup_location": "hashicorp://privacy-kv-backup/kv/data/customer/pii-encryption-backup"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "privacy-service",
+        "customer-data-processor"
+      ],
+      "related_keys": [],
+      "environments": [
+        "staging"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-PRIVACY-001",
+      "project_code": "PROJ-PRIVACY-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-05-25T09:45:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/privacy/pii-encryption",
+      "ticket_reference": "PRIVACY-8642",
+      "business_justification": "GDPR-compliant customer PII protection for staging testing",
+      "risk_assessment": "critical"
+    },
+    "tags": [
+      "pii",
+      "encryption",
+      "privacy",
+      "staging",
+      "gdpr"
+    ],
+    "custom_fields": {
+      "business_owner": "privacy-product@tecro",
+      "disaster_recovery_tier": "tier-1",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "b8c9d0e1-f2a3-4b5c-6d7e-8f9a0b1c2d3e",
+    "alias": "s3-encryption-prod",
+    "environment": "prod",
+    "owner": "storage-team@tecro",
+    "purpose": "S3 bucket encryption for customer data in production",
+    "created_at": "2024-05-15T10:30:00Z",
+    "rotation_interval_days": 365,
+    "location": "aws-kms://arn:aws:kms:us-west-2:123456789012:key/b8c9d0e1-f2a3-4b5c-6d7e-8f9a0b1c2d3e",
+    "compliance": {
+      "pci_scope": "cardholder-data",
+      "nist_classification": "secret",
+      "sox_applicable": true,
+      "gdpr_applicable": true,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "storage-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-05-15T10:30:00Z",
+      "last_rotated_at": "2024-05-15T10:30:00Z",
+      "next_rotation_due": "2025-05-15T10:30:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "security-team@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "aws-kms",
+      "high_availability": true,
+      "backup_location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/backup-b8c9d0e1"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "s3-service",
+        "data-pipeline",
+        "backup-service"
+      ],
+      "related_keys": [],
+      "environments": [
+        "prod"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-STORAGE-001",
+      "project_code": "PROJ-STORAGE-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-05-15T10:30:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/storage/s3-encryption",
+      "ticket_reference": "STORAGE-9753",
+      "business_justification": "PCI and GDPR compliant customer data encryption in S3",
+      "risk_assessment": "critical"
+    },
+    "tags": [
+      "s3",
+      "encryption",
+      "storage",
+      "prod",
+      "pci",
+      "gdpr"
+    ],
+    "custom_fields": {
+      "business_owner": "storage-product@tecro",
+      "disaster_recovery_tier": "tier-1",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a",
+    "alias": "webhook-signing-stage",
+    "environment": "staging",
+    "owner": "integrations@tecro",
+    "purpose": "HMAC signing for webhook payloads in staging environment",
+    "created_at": "2024-04-20T16:45:00Z",
+    "rotation_interval_days": 120,
+    "location": "hashicorp://integrations-kv/kv/data/webhooks/signing-key",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "confidential",
+      "sox_applicable": false,
+      "gdpr_applicable": false,
+      "retention_period_days": 1095
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "integrations-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-04-20T16:45:00Z",
+      "last_rotated_at": "2024-04-20T16:45:00Z",
+      "next_rotation_due": "2024-08-18T16:45:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "integrations@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "HMAC-SHA256",
+      "encoding": "base64",
+      "key_store_type": "hashicorp-vault",
+      "high_availability": true,
+      "backup_location": "hashicorp://integrations-kv-backup/kv/data/webhooks/signing-key-backup"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "webhook-service",
+        "integration-api",
+        "event-processor"
+      ],
+      "related_keys": [],
+      "environments": [
+        "staging"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-INTEGRATIONS-001",
+      "project_code": "PROJ-WEBHOOK-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-04-20T16:45:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/integrations/webhook-signing",
+      "ticket_reference": "INT-5432",
+      "business_justification": "Secure webhook payload signing for third-party integrations",
+      "risk_assessment": "medium"
+    },
+    "tags": [
+      "webhook",
+      "signing",
+      "hmac",
+      "staging",
+      "integrations"
+    ],
+    "custom_fields": {
+      "business_owner": "integrations-product@tecro",
+      "disaster_recovery_tier": "tier-2",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "c9d0e1f2-a3b4-5c6d-7e8f-9a0b1c2d3e4f",
+    "alias": "file-storage-encryption-prod",
+    "environment": "prod",
+    "owner": "storage-team@tecro",
+    "purpose": "File storage encryption for document management system",
+    "created_at": "2024-04-05T13:15:00Z",
+    "rotation_interval_days": 365,
+    "location": "azure-key-vault://tecro-prod-vault.vault.azure.net/keys/file-storage-key",
+    "compliance": {
+      "pci_scope": "out-of-scope",
+      "nist_classification": "confidential",
+      "sox_applicable": true,
+      "gdpr_applicable": true,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "storage-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-04-05T13:15:00Z",
+      "last_rotated_at": "2024-04-05T13:15:00Z",
+      "next_rotation_due": "2025-04-05T13:15:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "storage-team@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "azure-kv",
+      "high_availability": true,
+      "backup_location": "azure-key-vault://tecro-backup-vault.vault.azure.net/keys/file-storage-backup"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "document-service",
+        "file-manager",
+        "content-api"
+      ],
+      "related_keys": [],
+      "environments": [
+        "prod"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-STORAGE-001",
+      "project_code": "PROJ-DOCS-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-04-05T13:15:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/storage/document-encryption",
+      "ticket_reference": "DOCS-8024",
+      "business_justification": "Document management system encryption for SOX compliance",
+      "risk_assessment": "medium"
+    },
+    "tags": [
+      "file-storage",
+      "encryption",
+      "documents",
+      "prod",
+      "sox"
+    ],
+    "custom_fields": {
+      "business_owner": "documents-product@tecro",
+      "disaster_recovery_tier": "tier-2",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b",
+    "alias": "reporting-encryption-stage",
+    "environment": "staging",
+    "owner": "analytics-team@tecro",
+    "purpose": "Financial reporting data encryption for staging environment",
+    "created_at": "2024-03-22T07:00:00Z",
+    "rotation_interval_days": 180,
+    "location": "aws-kms://arn:aws:kms:us-west-2:123456789012:key/e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "confidential",
+      "sox_applicable": true,
+      "gdpr_applicable": true,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "analytics-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-03-22T07:00:00Z",
+      "last_rotated_at": "2024-03-22T07:00:00Z",
+      "next_rotation_due": "2024-09-18T07:00:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "analytics-team@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "aws-kms",
+      "high_availability": true,
+      "backup_location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/backup-e5f6a7b8"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "reporting-service",
+        "analytics-pipeline"
+      ],
+      "related_keys": [],
+      "environments": [
+        "staging"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-ANALYTICS-001",
+      "project_code": "PROJ-ANALYTICS-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-03-22T07:00:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/analytics/reporting-encryption",
+      "ticket_reference": "ANALYTICS-7890",
+      "business_justification": "SOX-compliant financial reporting data protection",
+      "risk_assessment": "high"
+    },
+    "tags": [
+      "reporting",
+      "encryption",
+      "analytics",
+      "staging",
+      "financial"
+    ],
+    "custom_fields": {
+      "business_owner": "analytics-product@tecro",
+      "disaster_recovery_tier": "tier-2",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "e7f8a9b0-c1d2-3e4f-5a6b-7c8d9e0f1a2b",
+    "alias": "amex-tokenization-prod",
+    "environment": "prod",
+    "owner": "payments-platform@tecro",
+    "purpose": "American Express card tokenization for payment processing",
+    "created_at": "2024-03-10T12:00:00Z",
+    "rotation_interval_days": 60,
+    "location": "azure-key-vault://tecro-prod-vault.vault.azure.net/keys/amex-token-key",
+    "compliance": {
+      "pci_scope": "cardholder-data",
+      "nist_classification": "top-secret",
+      "sox_applicable": true,
+      "gdpr_applicable": false,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "payments-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-03-10T12:00:00Z",
+      "last_rotated_at": "2024-03-10T12:00:00Z",
+      "next_rotation_due": "2024-05-09T12:00:00Z",
+      "rotation_count": 1,
+      "emergency_contact": "security-team@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "azure-kv",
+      "high_availability": true,
+      "backup_location": "azure-key-vault://tecro-backup-vault.vault.azure.net/keys/amex-token-backup"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "payment-processor",
+        "amex-gateway",
+        "tokenization-service"
+      ],
+      "related_keys": [
+        "42b7a3d1-f2e4-4a1b-8c8a-1234567890ab"
+      ],
+      "environments": [
+        "prod"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-PAYMENTS-001",
+      "project_code": "PROJ-AMEX-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-03-10T12:00:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/payments/amex-tokenization",
+      "ticket_reference": "PAY-3691",
+      "business_justification": "PCI-compliant American Express card tokenization",
+      "risk_assessment": "critical"
+    },
+    "tags": [
+      "amex",
+      "tokenization",
+      "pci",
+      "prod",
+      "american-express"
+    ],
+    "custom_fields": {
+      "business_owner": "payments-product@tecro",
+      "disaster_recovery_tier": "tier-1",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "00112233-4455-6677-8899-aabbccddeeff",
+    "alias": "db-encryption-dev",
+    "environment": "dev",
+    "owner": "db-admins@tecro",
+    "purpose": "Encrypting sensitive columns in the development database",
+    "created_at": "2024-03-01T18:00:00Z",
+    "rotation_interval_days": 730,
+    "location": "azure-key-vault://tecro-dev-vault.vault.azure.net/keys/db-dev-key",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "internal",
+      "sox_applicable": false,
+      "gdpr_applicable": true,
+      "retention_period_days": 365
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "db-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-03-01T18:00:00Z",
+      "last_rotated_at": "2024-03-01T18:00:00Z",
+      "next_rotation_due": "2026-02-28T18:00:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "db-admins@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "azure-kv",
+      "high_availability": false,
+      "backup_location": ""
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "database-service",
+        "migration-tools"
+      ],
+      "related_keys": [],
+      "environments": [
+        "dev"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": false,
+      "alerting_enabled": false,
+      "auto_rotation_enabled": false,
+      "emergency_revocation_enabled": false,
+      "cost_center": "CC-DEV-001",
+      "project_code": "PROJ-DB-2024"
+    },
+    "audit": {
+      "access_logs_enabled": false,
+      "usage_tracking_enabled": false,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-03-01T18:00:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/database/encryption-dev",
+      "ticket_reference": "DB-2468",
+      "business_justification": "Development database column encryption for testing",
+      "risk_assessment": "low"
+    },
+    "tags": [
+      "database",
+      "encryption",
+      "dev",
+      "testing"
+    ],
+    "custom_fields": {
+      "business_owner": "database-product@tecro",
+      "disaster_recovery_tier": "tier-3",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "f0a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c",
+    "alias": "logs-encryption-prod",
+    "environment": "prod",
+    "owner": "logging-team@tecro",
+    "purpose": "Application logs encryption for compliance and audit trails",
+    "created_at": "2024-02-28T11:30:00Z",
+    "rotation_interval_days": 730,
+    "location": "gcp-kms://projects/tecro-prod/locations/us-east1/keyRings/logging-keys/cryptoKeys/logs-encryption",
+    "compliance": {
+      "pci_scope": "out-of-scope",
+      "nist_classification": "confidential",
+      "sox_applicable": true,
+      "gdpr_applicable": true,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "logging-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-02-28T11:30:00Z",
+      "last_rotated_at": "2024-02-28T11:30:00Z",
+      "next_rotation_due": "2026-02-27T11:30:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "logging-team@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "custom",
+      "high_availability": true,
+      "backup_location": "gcp-kms://projects/tecro-backup/locations/us-west1/keyRings/logging-backup/cryptoKeys/logs-backup"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "logging-service",
+        "audit-service",
+        "compliance-tracker"
+      ],
+      "related_keys": [],
+      "environments": [
+        "prod"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": false,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-INFRA-001",
+      "project_code": "PROJ-LOGGING-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-02-28T11:30:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/logging/encryption",
+      "ticket_reference": "LOG-7531",
+      "business_justification": "SOX and compliance-required audit log encryption",
+      "risk_assessment": "medium"
+    },
+    "tags": [
+      "logs",
+      "encryption",
+      "compliance",
+      "prod",
+      "audit",
+      "sox"
+    ],
+    "custom_fields": {
+      "business_owner": "logging-product@tecro",
+      "disaster_recovery_tier": "tier-2",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "42b7a3d1-f2e4-4a1b-8c8a-1234567890ab",
+    "alias": "visa-tokenization",
+    "environment": "prod",
+    "owner": "payments-platform@tecro",
+    "purpose": "HSM card data encryption for Visa payment processing",
+    "created_at": "2024-02-03T10:12:48Z",
+    "rotation_interval_days": 90,
+    "location": "hashicorp://payments-kv/kv/data/payments/visa-tokenization",
+    "compliance": {
+      "pci_scope": "cardholder-data",
+      "nist_classification": "secret",
+      "sox_applicable": true,
+      "gdpr_applicable": false,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "payments-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-02-03T10:12:48Z",
+      "last_rotated_at": "2024-02-03T10:12:48Z",
+      "next_rotation_due": "2024-05-03T10:12:48Z",
+      "rotation_count": 0,
+      "emergency_contact": "security-team@tecro"
+    },
+    "technical": {
+      "key_type": "symmetric",
+      "key_size": 256,
+      "algorithm": "AES-256-GCM",
+      "encoding": "base64",
+      "key_store_type": "hashicorp-vault",
+      "high_availability": true,
+      "backup_location": "hashicorp://payments-kv-backup/kv/data/payments/visa-tokenization"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "payment-processor",
+        "visa-gateway",
+        "tokenization-service"
+      ],
+      "related_keys": [],
+      "environments": [
+        "prod"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-PAYMENTS-001",
+      "project_code": "PROJ-PAY-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-02-03T10:12:48Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/payments/visa-tokenization",
+      "ticket_reference": "PAY-5678",
+      "business_justification": "PCI-compliant Visa payment card tokenization",
+      "risk_assessment": "critical"
+    },
+    "tags": [
+      "hsm",
+      "tokenization",
+      "pci",
+      "visa",
+      "production"
+    ],
+    "custom_fields": {
+      "business_owner": "payments-product@tecro",
+      "disaster_recovery_tier": "tier-1",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "alias": "internal-api-auth",
+    "environment": "staging",
+    "owner": "api-gateway-team@tecro",
+    "purpose": "JWT signing for internal service-to-service communication",
+    "created_at": "2024-01-20T14:30:00Z",
+    "rotation_interval_days": 365,
+    "location": "aws-kms://arn:aws:kms:us-east-1:123456789012:key/a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "confidential",
+      "sox_applicable": false,
+      "gdpr_applicable": true,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "api-gateway-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2024-01-20T14:30:00Z",
+      "last_rotated_at": "2024-01-20T14:30:00Z",
+      "next_rotation_due": "2025-01-20T14:30:00Z",
+      "rotation_count": 0,
+      "emergency_contact": "security-team@tecro"
+    },
+    "technical": {
+      "key_type": "jwt",
+      "key_size": 2048,
+      "algorithm": "RS256",
+      "encoding": "pkcs8",
+      "key_store_type": "aws-kms",
+      "high_availability": true,
+      "backup_location": "aws-kms://arn:aws:kms:us-west-2:123456789012:key/backup-a1b2c3d4"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "api-gateway",
+        "internal-services"
+      ],
+      "related_keys": [],
+      "environments": [
+        "staging"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-INFRA-001",
+      "project_code": "PROJ-API-2024"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2024-01-20T14:30:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/api-gateway/auth-keys",
+      "ticket_reference": "INFRA-1234",
+      "business_justification": "Required for secure internal service communication",
+      "risk_assessment": "medium"
+    },
+    "tags": [
+      "jwt",
+      "auth",
+      "api-gateway",
+      "staging"
+    ],
+    "custom_fields": {
+      "business_owner": "api-gateway-product@tecro",
+      "disaster_recovery_tier": "tier-2",
+      "encryption_at_rest": true
+    }
+  },
+  {
+    "key_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "alias": "mastercard-encryption",
+    "environment": "prod",
+    "owner": "fraud-detection@tecro",
+    "purpose": "Real-time transaction signing for Mastercard fraud detection",
+    "created_at": "2023-11-15T09:00:00Z",
+    "rotation_interval_days": 180,
+    "location": "gcp-kms://projects/tecro-prod/locations/us-central1/keyRings/fraud-keys/cryptoKeys/mastercard-key",
+    "compliance": {
+      "pci_scope": "none",
+      "nist_classification": "top-secret",
+      "sox_applicable": true,
+      "gdpr_applicable": false,
+      "retention_period_days": 2555
+    },
+    "lifecycle": {
+      "status": "active",
+      "created_by": "fraud-team",
+      "approved_by": "key-inventory-admin",
+      "approved_at": "2023-11-15T09:00:00Z",
+      "last_rotated_at": "2023-11-15T09:00:00Z",
+      "next_rotation_due": "2024-05-13T09:00:00Z",
+      "rotation_count": 1,
+      "emergency_contact": "security-team@tecro"
+    },
+    "technical": {
+      "key_type": "ec",
+      "key_size": 256,
+      "algorithm": "ECDSA-P256",
+      "encoding": "pkcs8",
+      "key_store_type": "custom",
+      "high_availability": true,
+      "backup_location": "gcp-kms://projects/tecro-backup/locations/us-west1/keyRings/fraud-backup/cryptoKeys/mastercard-backup"
+    },
+    "relationships": {
+      "depends_on": [],
+      "used_by": [
+        "fraud-detection-service",
+        "mastercard-gateway",
+        "transaction-processor"
+      ],
+      "related_keys": [],
+      "environments": [
+        "prod"
+      ]
+    },
+    "operational": {
+      "monitoring_enabled": true,
+      "alerting_enabled": true,
+      "auto_rotation_enabled": true,
+      "emergency_revocation_enabled": true,
+      "cost_center": "CC-FRAUD-001",
+      "project_code": "PROJ-FRAUD-2023"
+    },
+    "audit": {
+      "access_logs_enabled": true,
+      "usage_tracking_enabled": true,
+      "compliance_scan_enabled": true,
+      "last_compliance_check": "2023-11-15T09:00:00Z",
+      "compliance_status": "compliant"
+    },
+    "metadata": {
+      "version": "2.0",
+      "documentation_url": "https://wiki.tecro.com/fraud/mastercard-signing",
+      "ticket_reference": "FRAUD-9012",
+      "business_justification": "Critical fraud detection for Mastercard transactions",
+      "risk_assessment": "critical"
+    },
+    "tags": [
+      "mastercard",
+      "signing",
+      "fraud-detection",
+      "production",
+      "high-security"
+    ],
+    "custom_fields": {
+      "business_owner": "fraud-product@tecro",
+      "disaster_recovery_tier": "tier-1",
+      "encryption_at_rest": true
+    }
+  }
+]
