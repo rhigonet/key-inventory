@@ -3,11 +3,68 @@ key_id: f47ac10b-58cc-4372-a567-0e02b2c3d479
 alias: mastercard-encryption
 environment: prod
 owner: fraud-detection@tecro
-purpose: Real-time transaction signing
+purpose: Real-time transaction signing for Mastercard fraud detection
 created_at: "2023-11-15T09:00:00Z"
 rotation_interval_days: 180
 location: "gcp-kms://projects/tecro-prod/locations/us-central1/keyRings/fraud-keys/cryptoKeys/mastercard-key"
+
 compliance:
   pci_scope: none
   nist_classification: top-secret
-tags: [mastercard, signing, fraud-detection]
+  sox_applicable: true
+  gdpr_applicable: false
+  retention_period_days: 2555
+
+lifecycle:
+  status: active
+  created_by: fraud-team
+  approved_by: key-inventory-admin
+  approved_at: "2023-11-15T09:00:00Z"
+  last_rotated_at: "2023-11-15T09:00:00Z"
+  next_rotation_due: "2024-05-13T09:00:00Z"
+  rotation_count: 1
+  emergency_contact: security-team@tecro
+
+technical:
+  key_type: ec
+  key_size: 256
+  algorithm: ECDSA-P256
+  encoding: pkcs8
+  key_store_type: custom
+  high_availability: true
+  backup_location: "gcp-kms://projects/tecro-backup/locations/us-west1/keyRings/fraud-backup/cryptoKeys/mastercard-backup"
+
+relationships:
+  depends_on: []
+  used_by: ["fraud-detection-service", "mastercard-gateway", "transaction-processor"]
+  related_keys: []
+  environments: ["prod"]
+
+operational:
+  monitoring_enabled: true
+  alerting_enabled: true
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: true
+  cost_center: "CC-FRAUD-001"
+  project_code: "PROJ-FRAUD-2023"
+
+audit:
+  access_logs_enabled: true
+  usage_tracking_enabled: true
+  compliance_scan_enabled: true
+  last_compliance_check: "2023-11-15T09:00:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/fraud/mastercard-signing"
+  ticket_reference: "FRAUD-9012"
+  business_justification: "Critical fraud detection for Mastercard transactions"
+  risk_assessment: critical
+
+tags: [mastercard, signing, fraud-detection, production, high-security]
+
+custom_fields:
+  business_owner: "fraud-product@tecro"
+  disaster_recovery_tier: "tier-1"
+  encryption_at_rest: true

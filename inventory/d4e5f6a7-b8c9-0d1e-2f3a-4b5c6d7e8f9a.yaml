@@ -2,11 +2,68 @@ key_id: d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a
 alias: webhook-signing-stage
 environment: staging
 owner: integrations@tecro
-purpose: HMAC signing for webhook payloads
+purpose: HMAC signing for webhook payloads in staging environment
 created_at: "2024-04-20T16:45:00Z"
 rotation_interval_days: 120
 location: "hashicorp://integrations-kv/kv/data/webhooks/signing-key"
+
 compliance:
   pci_scope: none
   nist_classification: confidential
-tags: [webhook, signing, hmac, staging]
+  sox_applicable: false
+  gdpr_applicable: false
+  retention_period_days: 1095
+
+lifecycle:
+  status: active
+  created_by: integrations-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-04-20T16:45:00Z"
+  last_rotated_at: "2024-04-20T16:45:00Z"
+  next_rotation_due: "2024-08-18T16:45:00Z"
+  rotation_count: 0
+  emergency_contact: integrations@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: HMAC-SHA256
+  encoding: base64
+  key_store_type: hashicorp-vault
+  high_availability: true
+  backup_location: "hashicorp://integrations-kv-backup/kv/data/webhooks/signing-key-backup"
+
+relationships:
+  depends_on: []
+  used_by: ["webhook-service", "integration-api", "event-processor"]
+  related_keys: []
+  environments: ["staging"]
+
+operational:
+  monitoring_enabled: true
+  alerting_enabled: true
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: true
+  cost_center: "CC-INTEGRATIONS-001"
+  project_code: "PROJ-WEBHOOK-2024"
+
+audit:
+  access_logs_enabled: true
+  usage_tracking_enabled: true
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-04-20T16:45:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/integrations/webhook-signing"
+  ticket_reference: "INT-5432"
+  business_justification: "Secure webhook payload signing for third-party integrations"
+  risk_assessment: medium
+
+tags: [webhook, signing, hmac, staging, integrations]
+
+custom_fields:
+  business_owner: "integrations-product@tecro"
+  disaster_recovery_tier: "tier-2"
+  encryption_at_rest: true

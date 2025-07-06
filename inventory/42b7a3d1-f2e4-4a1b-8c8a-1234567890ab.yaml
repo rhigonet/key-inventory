@@ -3,11 +3,68 @@ key_id: 42b7a3d1-f2e4-4a1b-8c8a-1234567890ab
 alias: visa-tokenization
 environment: prod
 owner: payments-platform@tecro
-purpose: HSM card data encryption
+purpose: HSM card data encryption for Visa payment processing
 created_at: "2024-02-03T10:12:48Z"
 rotation_interval_days: 90
 location: "hashicorp://payments-kv/kv/data/payments/visa-tokenization"
+
 compliance:
   pci_scope: cardholder-data
   nist_classification: secret
-tags: [hsm, tokenization, pci]
+  sox_applicable: true
+  gdpr_applicable: false
+  retention_period_days: 2555
+
+lifecycle:
+  status: active
+  created_by: payments-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-02-03T10:12:48Z"
+  last_rotated_at: "2024-02-03T10:12:48Z"
+  next_rotation_due: "2024-05-03T10:12:48Z"
+  rotation_count: 0
+  emergency_contact: security-team@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: AES-256-GCM
+  encoding: base64
+  key_store_type: hashicorp-vault
+  high_availability: true
+  backup_location: "hashicorp://payments-kv-backup/kv/data/payments/visa-tokenization"
+
+relationships:
+  depends_on: []
+  used_by: ["payment-processor", "visa-gateway", "tokenization-service"]
+  related_keys: []
+  environments: ["prod"]
+
+operational:
+  monitoring_enabled: true
+  alerting_enabled: true
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: true
+  cost_center: "CC-PAYMENTS-001"
+  project_code: "PROJ-PAY-2024"
+
+audit:
+  access_logs_enabled: true
+  usage_tracking_enabled: true
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-02-03T10:12:48Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/payments/visa-tokenization"
+  ticket_reference: "PAY-5678"
+  business_justification: "PCI-compliant Visa payment card tokenization"
+  risk_assessment: critical
+
+tags: [hsm, tokenization, pci, visa, production]
+
+custom_fields:
+  business_owner: "payments-product@tecro"
+  disaster_recovery_tier: "tier-1"
+  encryption_at_rest: true

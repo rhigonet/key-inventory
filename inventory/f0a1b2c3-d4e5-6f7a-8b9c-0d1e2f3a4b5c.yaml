@@ -2,11 +2,68 @@ key_id: f0a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c
 alias: logs-encryption-prod
 environment: prod
 owner: logging-team@tecro
-purpose: Application logs encryption for compliance
+purpose: Application logs encryption for compliance and audit trails
 created_at: "2024-02-28T11:30:00Z"
 rotation_interval_days: 730
 location: "gcp-kms://projects/tecro-prod/locations/us-east1/keyRings/logging-keys/cryptoKeys/logs-encryption"
+
 compliance:
   pci_scope: out-of-scope
   nist_classification: confidential
-tags: [logs, encryption, compliance, prod]
+  sox_applicable: true
+  gdpr_applicable: true
+  retention_period_days: 2555
+
+lifecycle:
+  status: active
+  created_by: logging-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-02-28T11:30:00Z"
+  last_rotated_at: "2024-02-28T11:30:00Z"
+  next_rotation_due: "2026-02-27T11:30:00Z"
+  rotation_count: 0
+  emergency_contact: logging-team@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: AES-256-GCM
+  encoding: base64
+  key_store_type: custom
+  high_availability: true
+  backup_location: "gcp-kms://projects/tecro-backup/locations/us-west1/keyRings/logging-backup/cryptoKeys/logs-backup"
+
+relationships:
+  depends_on: []
+  used_by: ["logging-service", "audit-service", "compliance-tracker"]
+  related_keys: []
+  environments: ["prod"]
+
+operational:
+  monitoring_enabled: true
+  alerting_enabled: true
+  auto_rotation_enabled: false
+  emergency_revocation_enabled: true
+  cost_center: "CC-INFRA-001"
+  project_code: "PROJ-LOGGING-2024"
+
+audit:
+  access_logs_enabled: true
+  usage_tracking_enabled: true
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-02-28T11:30:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/logging/encryption"
+  ticket_reference: "LOG-7531"
+  business_justification: "SOX and compliance-required audit log encryption"
+  risk_assessment: medium
+
+tags: [logs, encryption, compliance, prod, audit, sox]
+
+custom_fields:
+  business_owner: "logging-product@tecro"
+  disaster_recovery_tier: "tier-2"
+  encryption_at_rest: true

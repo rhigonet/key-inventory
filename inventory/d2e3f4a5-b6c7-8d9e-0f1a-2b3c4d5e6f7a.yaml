@@ -2,11 +2,68 @@ key_id: d2e3f4a5-b6c7-8d9e-0f1a-2b3c4d5e6f7a
 alias: session-encryption-dev
 environment: dev
 owner: auth-team@tecro
-purpose: User session data encryption for development
+purpose: User session data encryption for development environment
 created_at: "2024-06-10T15:30:00Z"
 rotation_interval_days: 60
 location: "gcp-kms://projects/tecro-dev/locations/us-west1/keyRings/session-keys/cryptoKeys/session-dev"
+
 compliance:
   pci_scope: none
   nist_classification: internal
-tags: [session, encryption, auth, dev]
+  sox_applicable: false
+  gdpr_applicable: true
+  retention_period_days: 365
+
+lifecycle:
+  status: active
+  created_by: auth-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-06-10T15:30:00Z"
+  last_rotated_at: "2024-06-10T15:30:00Z"
+  next_rotation_due: "2024-08-09T15:30:00Z"
+  rotation_count: 0
+  emergency_contact: auth-team@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: AES-256-GCM
+  encoding: base64
+  key_store_type: custom
+  high_availability: false
+  backup_location: ""
+
+relationships:
+  depends_on: []
+  used_by: ["auth-service", "session-manager"]
+  related_keys: []
+  environments: ["dev"]
+
+operational:
+  monitoring_enabled: false
+  alerting_enabled: false
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: false
+  cost_center: "CC-DEV-001"
+  project_code: "PROJ-AUTH-2024"
+
+audit:
+  access_logs_enabled: false
+  usage_tracking_enabled: false
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-06-10T15:30:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/auth/session-encryption"
+  ticket_reference: "AUTH-3456"
+  business_justification: "Development environment session security testing"
+  risk_assessment: low
+
+tags: [session, encryption, auth, dev, testing]
+
+custom_fields:
+  business_owner: "auth-product@tecro"
+  disaster_recovery_tier: "tier-3"
+  encryption_at_rest: true

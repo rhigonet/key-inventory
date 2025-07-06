@@ -2,11 +2,68 @@ key_id: c9d0e1f2-a3b4-5c6d-7e8f-9a0b1c2d3e4f
 alias: file-storage-encryption-prod
 environment: prod
 owner: storage-team@tecro
-purpose: File storage encryption for document management
+purpose: File storage encryption for document management system
 created_at: "2024-04-05T13:15:00Z"
 rotation_interval_days: 365
 location: "azure-key-vault://tecro-prod-vault.vault.azure.net/keys/file-storage-key"
+
 compliance:
   pci_scope: out-of-scope
   nist_classification: confidential
-tags: [file-storage, encryption, documents, prod]
+  sox_applicable: true
+  gdpr_applicable: true
+  retention_period_days: 2555
+
+lifecycle:
+  status: active
+  created_by: storage-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-04-05T13:15:00Z"
+  last_rotated_at: "2024-04-05T13:15:00Z"
+  next_rotation_due: "2025-04-05T13:15:00Z"
+  rotation_count: 0
+  emergency_contact: storage-team@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: AES-256-GCM
+  encoding: base64
+  key_store_type: azure-kv
+  high_availability: true
+  backup_location: "azure-key-vault://tecro-backup-vault.vault.azure.net/keys/file-storage-backup"
+
+relationships:
+  depends_on: []
+  used_by: ["document-service", "file-manager", "content-api"]
+  related_keys: []
+  environments: ["prod"]
+
+operational:
+  monitoring_enabled: true
+  alerting_enabled: true
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: true
+  cost_center: "CC-STORAGE-001"
+  project_code: "PROJ-DOCS-2024"
+
+audit:
+  access_logs_enabled: true
+  usage_tracking_enabled: true
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-04-05T13:15:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/storage/document-encryption"
+  ticket_reference: "DOCS-8024"
+  business_justification: "Document management system encryption for SOX compliance"
+  risk_assessment: medium
+
+tags: [file-storage, encryption, documents, prod, sox]
+
+custom_fields:
+  business_owner: "documents-product@tecro"
+  disaster_recovery_tier: "tier-2"
+  encryption_at_rest: true

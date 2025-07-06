@@ -1,12 +1,69 @@
 key_id: a1c263af-7b95-4d3e-8450-81c4b8ba9123
 alias: jwt-auth-signing
-environment: stage
+environment: staging
 owner: security@tecro
-purpose: JWT signing key for auth tokens
+purpose: JWT signing key for authentication tokens in staging
 created_at: "2025-06-29T21:12:00Z"
 rotation_interval_days: 60
 location: "azure-kv://stage-kv/keys/jwt-auth-signing/123456"
+
 compliance:
   pci_scope: out-of-scope
   nist_classification: secret
-tags: [jwt, signing, auth, azure]
+  sox_applicable: false
+  gdpr_applicable: true
+  retention_period_days: 1825
+
+lifecycle:
+  status: active
+  created_by: security-team
+  approved_by: key-inventory-admin
+  approved_at: "2025-06-29T21:12:00Z"
+  last_rotated_at: "2025-06-29T21:12:00Z"
+  next_rotation_due: "2025-08-28T21:12:00Z"
+  rotation_count: 0
+  emergency_contact: security@tecro
+
+technical:
+  key_type: rsa
+  key_size: 2048
+  algorithm: RS256
+  encoding: pkcs8
+  key_store_type: azure-kv
+  high_availability: true
+  backup_location: "azure-kv://stage-kv-backup/keys/jwt-auth-signing-backup/123456"
+
+relationships:
+  depends_on: []
+  used_by: ["auth-service", "jwt-validator"]
+  related_keys: []
+  environments: ["staging"]
+
+operational:
+  monitoring_enabled: true
+  alerting_enabled: true
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: true
+  cost_center: "CC-SECURITY-001"
+  project_code: "PROJ-AUTH-2025"
+
+audit:
+  access_logs_enabled: true
+  usage_tracking_enabled: true
+  compliance_scan_enabled: true
+  last_compliance_check: "2025-06-29T21:12:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/security/jwt-signing"
+  ticket_reference: "SEC-1357"
+  business_justification: "Secure JWT token signing for authentication system"
+  risk_assessment: high
+
+tags: [jwt, signing, auth, azure, staging]
+
+custom_fields:
+  business_owner: "security-product@tecro"
+  disaster_recovery_tier: "tier-2"
+  encryption_at_rest: true

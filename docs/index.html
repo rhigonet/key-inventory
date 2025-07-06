@@ -1172,6 +1172,22 @@
                 option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
                 complianceFilter.appendChild(option);
             });
+            
+            // Add additional filter options for enhanced schema
+            const pciOption = document.createElement('option');
+            pciOption.value = 'pci';
+            pciOption.textContent = 'PCI Scope';
+            complianceFilter.appendChild(pciOption);
+            
+            const soxOption = document.createElement('option');
+            soxOption.value = 'sox';
+            soxOption.textContent = 'SOX Applicable';
+            complianceFilter.appendChild(soxOption);
+            
+            const gdprOption = document.createElement('option');
+            gdprOption.value = 'gdpr';
+            gdprOption.textContent = 'GDPR Applicable';
+            complianceFilter.appendChild(gdprOption);
         }
 
         // Update dashboard statistics
@@ -1350,13 +1366,27 @@
                 
                 const keyCard = document.createElement('div');
                 keyCard.className = 'key-card';
+                
+                // Enhanced schema v2.0 fields display
+                const lifecycleStatus = key.lifecycle ? key.lifecycle.status : 'unknown';
+                const technicalType = key.technical ? key.technical.key_type : 'unknown';
+                const riskLevel = key.metadata ? key.metadata.risk_assessment : 'unknown';
+                const complianceStatus = key.audit ? key.audit.compliance_status : 'unknown';
+                const schemaVersion = key.metadata ? key.metadata.version : '1.0';
+                
                 keyCard.innerHTML = `
                     <div class="key-header">
                         <div>
                             <div class="key-alias">${key.alias}</div>
                             <div class="key-id">${key.key_id}</div>
+                            <div style="font-size: 0.7rem; color: rgb(var(--muted-foreground)); margin-top: 0.25rem;">
+                                Schema v${schemaVersion} | ${technicalType.toUpperCase()} | Risk: ${riskLevel}
+                            </div>
                         </div>
-                        <span class="badge ${key.environment === 'prod' ? 'badge-destructive' : key.environment === 'staging' ? 'badge-warning' : 'badge-success'}">${key.environment}</span>
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem; align-items: flex-end;">
+                            <span class="badge ${key.environment === 'prod' ? 'badge-destructive' : key.environment === 'staging' ? 'badge-warning' : 'badge-success'}">${key.environment}</span>
+                            <span class="badge ${lifecycleStatus === 'active' ? 'badge-success' : lifecycleStatus === 'deprecated' ? 'badge-warning' : 'badge-destructive'}" style="font-size: 0.65rem;">${lifecycleStatus}</span>
+                        </div>
                     </div>
                     
                     <div class="key-details">
@@ -1376,6 +1406,21 @@
                             <span class="detail-label">Rotation:</span>
                             <span class="detail-value ${rotationStatus.class}">${rotationStatus.message}</span>
                         </div>
+                        
+                        ${key.technical ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Technical:</span>
+                            <span class="detail-value">${key.technical.key_type} (${key.technical.key_size || 'N/A'} bits) - ${key.technical.algorithm || 'Standard'}</span>
+                        </div>
+                        ` : ''}
+                        
+                        ${key.operational ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Monitoring:</span>
+                            <span class="detail-value">${key.operational.monitoring_enabled ? '✓ Enabled' : '✗ Disabled'} | Auto-rotation: ${key.operational.auto_rotation_enabled ? '✓' : '✗'}</span>
+                        </div>
+                        ` : ''}
+                        
                         <div class="detail-item">
                             <span class="detail-label">Location:</span>
                             <span class="detail-value" style="font-family: 'Monaco', monospace; font-size: 0.75rem; word-break: break-all;">${key.location}</span>
@@ -1388,7 +1433,23 @@
                             <div class="compliance-item">
                                 <div>NIST: ${key.compliance.nist_classification}</div>
                             </div>
+                            ${key.compliance.sox_applicable ? '<div class="compliance-item"><div>SOX: ✓</div></div>' : ''}
+                            ${key.compliance.gdpr_applicable ? '<div class="compliance-item"><div>GDPR: ✓</div></div>' : ''}
                         </div>
+                        
+                        ${key.relationships && key.relationships.used_by && key.relationships.used_by.length > 0 ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Used by:</span>
+                            <span class="detail-value">${key.relationships.used_by.slice(0, 3).join(', ')}${key.relationships.used_by.length > 3 ? '...' : ''}</span>
+                        </div>
+                        ` : ''}
+                        
+                        ${key.operational && key.operational.cost_center ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Cost Center:</span>
+                            <span class="detail-value">${key.operational.cost_center}</span>
+                        </div>
+                        ` : ''}
                         
                         <div class="tags">
                             ${key.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
@@ -1402,6 +1463,11 @@
                         <a href="https://github.com/rhigonet/key-inventory/blob/main/inventory/${key.key_id}.yaml" target="_blank" class="btn btn-secondary btn-sm">
                             📝 View YAML
                         </a>
+                        ${key.metadata && key.metadata.documentation_url ? `
+                        <a href="${key.metadata.documentation_url}" target="_blank" class="btn btn-outline btn-sm">
+                            📖 Docs
+                        </a>
+                        ` : ''}
                     </div>
                 `;
                 keysContainer.appendChild(keyCard);
@@ -1426,10 +1492,28 @@
                     key.alias.toLowerCase().includes(searchTerm) ||
                     key.owner.toLowerCase().includes(searchTerm) ||
                     key.purpose.toLowerCase().includes(searchTerm) ||
-                    key.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                    key.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+                    (key.technical && key.technical.key_type && key.technical.key_type.toLowerCase().includes(searchTerm)) ||
+                    (key.relationships && key.relationships.used_by && key.relationships.used_by.some(service => service.toLowerCase().includes(searchTerm)));
                 
                 const matchesEnvironment = selectedEnvironment ? key.environment === selectedEnvironment : true;
-                const matchesCompliance = selectedCompliance ? key.compliance.nist_classification === selectedCompliance : true;
+                
+                let matchesCompliance = true;
+                if (selectedCompliance) {
+                    switch(selectedCompliance) {
+                        case 'pci':
+                            matchesCompliance = key.compliance.pci_scope !== 'none';
+                            break;
+                        case 'sox':
+                            matchesCompliance = key.compliance.sox_applicable === true;
+                            break;
+                        case 'gdpr':
+                            matchesCompliance = key.compliance.gdpr_applicable === true;
+                            break;
+                        default:
+                            matchesCompliance = key.compliance.nist_classification === selectedCompliance;
+                    }
+                }
 
                 return matchesSearch && matchesEnvironment && matchesCompliance;
             });

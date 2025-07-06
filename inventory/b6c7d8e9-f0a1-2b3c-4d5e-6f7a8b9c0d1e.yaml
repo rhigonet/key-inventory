@@ -2,11 +2,68 @@ key_id: b6c7d8e9-f0a1-2b3c-4d5e-6f7a8b9c0d1e
 alias: customer-pii-encryption-stage
 environment: staging
 owner: privacy-team@tecro
-purpose: Customer PII data encryption for staging tests
+purpose: Customer PII data encryption for staging environment testing
 created_at: "2024-05-25T09:45:00Z"
 rotation_interval_days: 30
 location: "hashicorp://privacy-kv/kv/data/customer/pii-encryption"
+
 compliance:
   pci_scope: none
   nist_classification: secret
-tags: [pii, encryption, privacy, staging]
+  sox_applicable: false
+  gdpr_applicable: true
+  retention_period_days: 2555
+
+lifecycle:
+  status: active
+  created_by: privacy-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-05-25T09:45:00Z"
+  last_rotated_at: "2024-05-25T09:45:00Z"
+  next_rotation_due: "2024-06-24T09:45:00Z"
+  rotation_count: 0
+  emergency_contact: privacy-team@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: AES-256-GCM
+  encoding: base64
+  key_store_type: hashicorp-vault
+  high_availability: true
+  backup_location: "hashicorp://privacy-kv-backup/kv/data/customer/pii-encryption-backup"
+
+relationships:
+  depends_on: []
+  used_by: ["privacy-service", "customer-data-processor"]
+  related_keys: []
+  environments: ["staging"]
+
+operational:
+  monitoring_enabled: true
+  alerting_enabled: true
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: true
+  cost_center: "CC-PRIVACY-001"
+  project_code: "PROJ-PRIVACY-2024"
+
+audit:
+  access_logs_enabled: true
+  usage_tracking_enabled: true
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-05-25T09:45:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/privacy/pii-encryption"
+  ticket_reference: "PRIVACY-8642"
+  business_justification: "GDPR-compliant customer PII protection for staging testing"
+  risk_assessment: critical
+
+tags: [pii, encryption, privacy, staging, gdpr]
+
+custom_fields:
+  business_owner: "privacy-product@tecro"
+  disaster_recovery_tier: "tier-1"
+  encryption_at_rest: true

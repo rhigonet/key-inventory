@@ -7,7 +7,64 @@ purpose: Encrypting sensitive columns in the development database
 created_at: "2024-03-01T18:00:00Z"
 rotation_interval_days: 730
 location: "azure-key-vault://tecro-dev-vault.vault.azure.net/keys/db-dev-key"
+
 compliance:
   pci_scope: none
   nist_classification: internal
-tags: [database, encryption, dev]
+  sox_applicable: false
+  gdpr_applicable: true
+  retention_period_days: 365
+
+lifecycle:
+  status: active
+  created_by: db-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-03-01T18:00:00Z"
+  last_rotated_at: "2024-03-01T18:00:00Z"
+  next_rotation_due: "2026-02-28T18:00:00Z"
+  rotation_count: 0
+  emergency_contact: db-admins@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: AES-256-GCM
+  encoding: base64
+  key_store_type: azure-kv
+  high_availability: false
+  backup_location: ""
+
+relationships:
+  depends_on: []
+  used_by: ["database-service", "migration-tools"]
+  related_keys: []
+  environments: ["dev"]
+
+operational:
+  monitoring_enabled: false
+  alerting_enabled: false
+  auto_rotation_enabled: false
+  emergency_revocation_enabled: false
+  cost_center: "CC-DEV-001"
+  project_code: "PROJ-DB-2024"
+
+audit:
+  access_logs_enabled: false
+  usage_tracking_enabled: false
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-03-01T18:00:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/database/encryption-dev"
+  ticket_reference: "DB-2468"
+  business_justification: "Development database column encryption for testing"
+  risk_assessment: low
+
+tags: [database, encryption, dev, testing]
+
+custom_fields:
+  business_owner: "database-product@tecro"
+  disaster_recovery_tier: "tier-3"
+  encryption_at_rest: true

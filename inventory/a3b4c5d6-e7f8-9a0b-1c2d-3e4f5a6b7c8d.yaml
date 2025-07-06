@@ -2,11 +2,68 @@ key_id: a3b4c5d6-e7f8-9a0b-1c2d-3e4f5a6b7c8d
 alias: api-rate-limit-dev
 environment: dev
 owner: platform-team@tecro
-purpose: API rate limiting token encryption
+purpose: API rate limiting token encryption for development environment
 created_at: "2024-06-15T14:20:00Z"
 rotation_interval_days: 90
 location: "aws-kms://arn:aws:kms:us-east-1:123456789012:key/a3b4c5d6-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
+
 compliance:
   pci_scope: none
   nist_classification: internal
-tags: [api, rate-limiting, dev, platform]
+  sox_applicable: false
+  gdpr_applicable: false
+  retention_period_days: 365
+
+lifecycle:
+  status: active
+  created_by: platform-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-06-15T14:20:00Z"
+  last_rotated_at: "2024-06-15T14:20:00Z"
+  next_rotation_due: "2024-09-13T14:20:00Z"
+  rotation_count: 0
+  emergency_contact: platform-team@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: AES-256-GCM
+  encoding: base64
+  key_store_type: aws-kms
+  high_availability: false
+  backup_location: ""
+
+relationships:
+  depends_on: []
+  used_by: ["api-gateway", "rate-limiter"]
+  related_keys: []
+  environments: ["dev"]
+
+operational:
+  monitoring_enabled: false
+  alerting_enabled: false
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: false
+  cost_center: "CC-PLATFORM-001"
+  project_code: "PROJ-PLATFORM-2024"
+
+audit:
+  access_logs_enabled: false
+  usage_tracking_enabled: false
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-06-15T14:20:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/platform/rate-limiting"
+  ticket_reference: "PLATFORM-4680"
+  business_justification: "Development API rate limiting for testing and validation"
+  risk_assessment: low
+
+tags: [api, rate-limiting, dev, platform, testing]
+
+custom_fields:
+  business_owner: "platform-product@tecro"
+  disaster_recovery_tier: "tier-3"
+  encryption_at_rest: true

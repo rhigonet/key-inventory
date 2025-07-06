@@ -6,7 +6,64 @@ purpose: Database backup encryption for development environment
 created_at: "2024-06-01T08:15:00Z"
 rotation_interval_days: 180
 location: "gcp-kms://projects/tecro-dev/locations/us-central1/keyRings/backup-keys/cryptoKeys/backup-dev"
+
 compliance:
   pci_scope: none
   nist_classification: internal
-tags: [backup, encryption, database, dev]
+  sox_applicable: false
+  gdpr_applicable: false
+  retention_period_days: 365
+
+lifecycle:
+  status: active
+  created_by: devops-team
+  approved_by: key-inventory-admin
+  approved_at: "2024-06-01T08:15:00Z"
+  last_rotated_at: "2024-06-01T08:15:00Z"
+  next_rotation_due: "2024-11-28T08:15:00Z"
+  rotation_count: 0
+  emergency_contact: devops@tecro
+
+technical:
+  key_type: symmetric
+  key_size: 256
+  algorithm: AES-256-GCM
+  encoding: base64
+  key_store_type: custom
+  high_availability: false
+  backup_location: ""
+
+relationships:
+  depends_on: []
+  used_by: ["backup-service", "database-service"]
+  related_keys: []
+  environments: ["dev"]
+
+operational:
+  monitoring_enabled: false
+  alerting_enabled: false
+  auto_rotation_enabled: true
+  emergency_revocation_enabled: false
+  cost_center: "CC-DEV-001"
+  project_code: "PROJ-DEVOPS-2024"
+
+audit:
+  access_logs_enabled: false
+  usage_tracking_enabled: false
+  compliance_scan_enabled: true
+  last_compliance_check: "2024-06-01T08:15:00Z"
+  compliance_status: compliant
+
+metadata:
+  version: "2.0"
+  documentation_url: "https://wiki.tecro.com/devops/backup-encryption"
+  ticket_reference: "DEVOPS-1975"
+  business_justification: "Development database backup encryption for testing"
+  risk_assessment: low
+
+tags: [backup, encryption, database, dev, testing]
+
+custom_fields:
+  business_owner: "devops-product@tecro"
+  disaster_recovery_tier: "tier-3"
+  encryption_at_rest: true
