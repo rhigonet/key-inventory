@@ -1,0 +1,193 @@
+name: Key Rotation Workflow
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  
+  workflow_dispatch:
+    inputs:
+      key_id:
+        description: 'Key ID to rotate'
+        required: false
+        type: string
+      force:
+        description: 'Force rotation'
+        required: false
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Dry run mode'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  check-rotation-due:
+    runs-on: ubuntu-latest
+    outputs:
+      keys-to-rotate: ${{ steps.check-rotation.outputs.keys }}
+      warning-keys: ${{ steps.check-rotation.outputs.warning_keys }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema
+      
+      - name: Check rotation due dates
+        id: check-rotation
+        run: |
+          if [ -n "${{ inputs.key_id }}" ]; then
+            python scripts/check-rotation-due.py --key-id="${{ inputs.key_id }}" --force=${{ inputs.force }} --output-json
+          else
+            python scripts/check-rotation-due.py --output-json
+          fi
+      
+      - name: Send rotation warnings
+        if: steps.check-rotation.outputs.warning_keys != '[]'
+        run: |
+          python scripts/send-rotation-warnings.py --keys='${{ steps.check-rotation.outputs.warning_keys }}'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+
+  rotate-keys:
+    runs-on: ubuntu-latest
+    needs: check-rotation-due
+    if: needs.check-rotation-due.outputs.keys-to-rotate != '[]'
+    environment: key-rotation
+    strategy:
+      matrix:
+        key: ${{ fromJson(needs.check-rotation-due.outputs.keys-to-rotate) }}
+      max-parallel: 3  # Limit concurrent rotations
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml boto3 azure-identity azure-keyvault-keys hvac
+      
+      - name: Setup cloud credentials
+        run: |
+          echo "Setting up credentials for key rotation"
+      
+      - name: Rotate key
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          python scripts/rotate-key.py --key-id="${{ matrix.key.key_id }}"
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+      
+      - name: Dry run simulation
+        if: ${{ inputs.dry_run == true }}
+        run: |
+          echo "DRY RUN: Would rotate key ${{ matrix.key.key_id }} (${{ matrix.key.alias }})"
+          python scripts/rotate-key.py --key-id="${{ matrix.key.key_id }}" --dry-run
+      
+      - name: Update key metadata
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          python scripts/update-key-after-rotation.py --key-id="${{ matrix.key.key_id }}"
+      
+      - name: Verify rotation
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          python scripts/verify-key-rotation.py --key-id="${{ matrix.key.key_id }}"
+      
+      - name: Update inventory file
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          # Check if the inventory file was updated
+          if git diff --exit-code inventory/${{ matrix.key.key_id }}.yaml; then
+            echo "No changes to inventory file"
+          else
+            echo "Inventory file updated"
+          fi
+      
+      - name: Commit and push changes
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add any changed files
+          git add inventory/${{ matrix.key.key_id }}.yaml
+          git add docs/keys.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "feat: rotate key ${{ matrix.key.alias }} (${{ matrix.key.key_id }})"
+            git push
+          fi
+      
+      - name: Send rotation notification
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          python scripts/send-notification.py --type=key-rotated --key-id="${{ matrix.key.key_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+      
+      - name: Handle rotation failure
+        if: failure() && ${{ inputs.dry_run != true }}
+        run: |
+          python scripts/handle-rotation-failure.py --key-id="${{ matrix.key.key_id }}"
+          python scripts/send-notification.py --type=rotation-failed --key-id="${{ matrix.key.key_id }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+          PAGERDUTY_API_KEY: ${{ secrets.PAGERDUTY_API_KEY }}
+
+  rotation-summary:
+    runs-on: ubuntu-latest
+    needs: [check-rotation-due, rotate-keys]
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Generate rotation summary
+        run: |
+          python scripts/generate-rotation-summary.py \
+            --scheduled-keys='${{ needs.check-rotation-due.outputs.keys-to-rotate }}' \
+            --warning-keys='${{ needs.check-rotation-due.outputs.warning-keys }}' \
+            --job-status='${{ needs.rotate-keys.result }}'
+      
+      - name: Send summary notification
+        if: github.event_name == 'schedule'
+        run: |
+          python scripts/send-notification.py --type=rotation-summary
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}

@@ -1,0 +1,294 @@
+name: Emergency Key Replacement
+
+on:
+  workflow_dispatch:
+    inputs:
+      key_id:
+        description: 'Key ID to replace'
+        required: true
+        type: string
+      incident_id:
+        description: 'Incident ID'
+        required: true
+        type: string
+      reason:
+        description: 'Reason for emergency replacement'
+        required: true
+        type: string
+      severity:
+        description: 'Incident severity'
+        required: true
+        type: choice
+        options:
+          - low
+          - medium
+          - high
+          - critical
+      immediate_revocation:
+        description: 'Immediately revoke old key'
+        required: false
+        type: boolean
+        default: true
+      notification_channels:
+        description: 'Additional notification channels (comma-separated)'
+        required: false
+        type: string
+        default: 'slack,email'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  emergency-replacement:
+    runs-on: ubuntu-latest
+    environment: emergency-key-ops
+    timeout-minutes: 60
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml boto3 azure-identity azure-keyvault-keys hvac requests
+      
+      - name: Validate emergency request
+        run: |
+          python scripts/validate-emergency-request.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --severity="${{ inputs.severity }}"
+      
+      - name: Setup cloud credentials
+        run: |
+          echo "Setting up emergency credentials for ${{ inputs.severity }} severity incident"
+      
+      - name: Create incident tracking
+        run: |
+          python scripts/create-incident-tracking.py \
+            --incident-id="${{ inputs.incident_id }}" \
+            --key-id="${{ inputs.key_id }}" \
+            --severity="${{ inputs.severity }}" \
+            --reason="${{ inputs.reason }}"
+      
+      - name: Send initial emergency alert
+        run: |
+          python scripts/send-emergency-notifications.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --severity="${{ inputs.severity }}" \
+            --phase="initiated" \
+            --channels="${{ inputs.notification_channels }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+          PAGERDUTY_API_KEY: ${{ secrets.PAGERDUTY_API_KEY }}
+          SMS_CONFIG: ${{ secrets.SMS_CONFIG }}
+      
+      - name: Immediate revocation
+        if: ${{ inputs.immediate_revocation == true }}
+        run: |
+          echo "⚠️ EMERGENCY: Immediately revoking compromised key"
+          python scripts/emergency-revoke-key.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}"
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+      
+      - name: Send revocation confirmation
+        if: ${{ inputs.immediate_revocation == true }}
+        run: |
+          python scripts/send-emergency-notifications.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --severity="${{ inputs.severity }}" \
+            --phase="revoked" \
+            --channels="${{ inputs.notification_channels }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+          PAGERDUTY_API_KEY: ${{ secrets.PAGERDUTY_API_KEY }}
+      
+      - name: Generate replacement key
+        run: |
+          echo "🔄 Generating replacement key"
+          python scripts/generate-replacement-key.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --severity="${{ inputs.severity }}"
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+      
+      - name: Update key inventory
+        run: |
+          python scripts/update-emergency-replacement.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --reason="${{ inputs.reason }}"
+      
+      - name: Verify replacement key
+        run: |
+          python scripts/verify-emergency-replacement.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}"
+      
+      - name: Update compliance records
+        run: |
+          python scripts/update-compliance-emergency.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --severity="${{ inputs.severity }}"
+      
+      - name: Generate incident report
+        run: |
+          python scripts/generate-incident-report.py \
+            --incident-id="${{ inputs.incident_id }}" \
+            --key-id="${{ inputs.key_id }}"
+      
+      - name: Commit emergency changes
+        run: |
+          git config --local user.email "emergency@github.com"
+          git config --local user.name "Emergency Key Replacement"
+          
+          # Add all modified files
+          git add inventory/
+          git add docs/
+          git add reports/
+          
+          git commit -m "emergency: replace key ${{ inputs.key_id }} (incident: ${{ inputs.incident_id }})"
+          git push
+      
+      - name: Send completion notification
+        run: |
+          python scripts/send-emergency-notifications.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --severity="${{ inputs.severity }}" \
+            --phase="completed" \
+            --channels="${{ inputs.notification_channels }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+          PAGERDUTY_API_KEY: ${{ secrets.PAGERDUTY_API_KEY }}
+      
+      - name: Create follow-up issues
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Create immediate follow-up issue
+            const followUpIssue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Emergency Key Replacement Follow-up: ${{ inputs.key_id }}`,
+              body: `
+                ## 🚨 Emergency Key Replacement Follow-up
+                
+                **Incident ID:** ${{ inputs.incident_id }}
+                **Key ID:** ${{ inputs.key_id }}
+                **Severity:** ${{ inputs.severity }}
+                **Reason:** ${{ inputs.reason }}
+                **Workflow Run:** ${context.runId}
+                
+                ### ✅ Immediate Actions Completed:
+                - [x] Compromised key revoked
+                - [x] Replacement key generated and provisioned
+                - [x] Key inventory updated
+                - [x] Incident tracking created
+                - [x] Emergency notifications sent
+                - [x] Compliance records updated
+                
+                ### 📋 Follow-up Actions Required:
+                - [ ] Verify all affected services are using new key
+                - [ ] Review incident response effectiveness
+                - [ ] Update documentation if needed
+                - [ ] Conduct post-incident review meeting
+                - [ ] Update emergency procedures if gaps identified
+                - [ ] Complete compliance reporting
+                - [ ] Notify external stakeholders if required
+                - [ ] Review and update monitoring/alerting
+                
+                ### ⏰ Timeline Requirements:
+                - **24 hours:** Verify service functionality
+                - **48 hours:** Complete post-incident review
+                - **1 week:** Submit compliance reports
+                - **2 weeks:** Implement process improvements
+                
+                ### 📊 Incident Metrics:
+                - **Detection Time:** Manual trigger
+                - **Response Time:** Immediate (emergency workflow)
+                - **Recovery Time:** ~${Math.ceil((Date.now() - new Date('${{ github.event.created_at }}').getTime()) / 60000)} minutes
+                
+                **Assigned to:** @security-team @key-inventory-admins
+              `,
+              labels: ['emergency', 'key-management', 'follow-up', 'security-incident', 'priority-high'],
+              assignees: []
+            });
+            
+            // If critical severity, create additional escalation issue
+            if ('${{ inputs.severity }}' === 'critical') {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🔴 CRITICAL: Emergency Key Replacement Escalation - ${{ inputs.key_id }}`,
+                body: `
+                  ## 🔴 CRITICAL SEVERITY ESCALATION
+                  
+                  This emergency key replacement has been marked as **CRITICAL** severity.
+                  
+                  **Incident ID:** ${{ inputs.incident_id }}
+                  **Key ID:** ${{ inputs.key_id }}
+                  **Related Issue:** #${followUpIssue.data.number}
+                  
+                  ### 🚨 Immediate Escalation Required:
+                  - [ ] Notify executive leadership
+                  - [ ] Activate crisis communication plan
+                  - [ ] Consider customer communication
+                  - [ ] Regulatory notification assessment
+                  - [ ] Legal team consultation
+                  - [ ] External security firm engagement (if needed)
+                  
+                  **Priority Level:** P0 - Critical
+                  **Assigned to:** @ciso @security-leadership
+                `,
+                labels: ['emergency', 'critical', 'escalation', 'leadership', 'p0'],
+                assignees: []
+              });
+            }
+      
+      - name: Handle emergency failure
+        if: failure()
+        run: |
+          echo "🚨 EMERGENCY WORKFLOW FAILED"
+          python scripts/handle-emergency-failure.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --workflow-run="${{ github.run_id }}"
+          
+          python scripts/send-emergency-notifications.py \
+            --key-id="${{ inputs.key_id }}" \
+            --incident-id="${{ inputs.incident_id }}" \
+            --severity="critical" \
+            --phase="failed" \
+            --channels="slack,email,pagerduty,sms"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+          PAGERDUTY_API_KEY: ${{ secrets.PAGERDUTY_API_KEY }}
+          SMS_CONFIG: ${{ secrets.SMS_CONFIG }}

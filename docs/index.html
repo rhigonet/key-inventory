@@ -684,7 +684,19 @@
             fetch('keys.json')
                 .then(response => response.json())
                 .then(data => {
-                    keys = data;
+                    // Handle both old format (array) and new format (object with metadata)
+                    if (Array.isArray(data)) {
+                        keys = data;
+                    } else if (data.keys) {
+                        keys = data.keys;
+                        // Display metadata if available
+                        if (data.metadata) {
+                            console.log('Build metadata:', data.metadata);
+                            displayBuildInfo(data.metadata);
+                        }
+                    } else {
+                        keys = [];
+                    }
                     populateFilters(keys);
                     renderKeys(keys);
                     updateStats(keys.length, keys.length);
@@ -800,6 +812,30 @@
             function updateStats(total, visible) {
                 totalKeysElement.textContent = total;
                 visibleKeysElement.textContent = visible;
+            }
+
+            function displayBuildInfo(metadata) {
+                // Add build info to the page if metadata is available
+                const header = document.querySelector('.header .container');
+                if (metadata && header) {
+                    const buildInfo = document.createElement('div');
+                    buildInfo.style.marginTop = '10px';
+                    buildInfo.style.fontSize = '0.9rem';
+                    buildInfo.style.opacity = '0.8';
+                    
+                    let infoText = `Built: ${new Date(metadata.build_timestamp).toLocaleString()}`;
+                    if (metadata.schema_version) {
+                        infoText += ` | Schema: v${metadata.schema_version}`;
+                    }
+                    if (metadata.statistics && metadata.statistics.schema_usage) {
+                        const enhanced = metadata.statistics.schema_usage.enhanced_schema_v2 || 0;
+                        const legacy = metadata.statistics.schema_usage.legacy_schema_v1 || 0;
+                        infoText += ` | Enhanced: ${enhanced}, Legacy: ${legacy}`;
+                    }
+                    
+                    buildInfo.textContent = infoText;
+                    header.appendChild(buildInfo);
+                }
             }
 
             function filterKeys() {

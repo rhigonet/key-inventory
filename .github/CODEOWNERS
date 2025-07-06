@@ -1,0 +1,56 @@
+# Key Inventory CODEOWNERS
+# This file defines code ownership and review requirements for the key inventory repository
+
+# Global ownership - security team has oversight of everything
+* @security-team
+
+# Key inventory files - require key-inventory-admins approval
+/inventory/ @key-inventory-admins
+/inventory/*.yaml @key-inventory-admins
+/inventory/*.yml @key-inventory-admins
+
+# Workflows and automation - require both security team and key-inventory-admins
+/.github/workflows/ @key-inventory-admins @security-team
+/.github/workflows/*.yml @key-inventory-admins @security-team
+
+# Scripts and automation tools - require key-inventory-admins approval
+/scripts/ @key-inventory-admins
+/scripts/*.py @key-inventory-admins
+
+# Documentation and reports - accessible by both teams
+/docs/ @key-inventory-admins @security-team
+/docs/*.html @key-inventory-admins @security-team
+/docs/*.json @key-inventory-admins @security-team
+/docs/*.md @key-inventory-admins @security-team
+
+# Emergency procedures - security team has primary responsibility
+/.github/workflows/emergency-key-replacement.yml @security-team
+/scripts/emergency-*.py @security-team
+/scripts/validate-emergency-*.py @security-team
+
+# Monitoring and alerting configurations
+/monitoring/ @key-inventory-admins @security-team
+/monitoring/*.yml @key-inventory-admins @security-team
+
+# Configuration files
+/config/ @key-inventory-admins @security-team
+/.ai-context/ @key-inventory-admins
+
+# Compliance and audit files
+/reports/ @security-team @compliance-team
+/compliance/ @security-team @compliance-team
+
+# Build and deployment scripts
+/build-data.py @key-inventory-admins
+/requirements.txt @key-inventory-admins
+
+# Repository configuration files
+/.github/CODEOWNERS @security-team
+/CLAUDE.md @key-inventory-admins
+/README.md @key-inventory-admins
+/KEY_LIFECYCLE_MANAGEMENT.md @key-inventory-admins @security-team
+
+# Environment and secret configurations (if any)
+.env* @security-team
+secrets.yml @security-team
+config.yml @key-inventory-admins @security-team

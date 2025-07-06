@@ -1,0 +1,164 @@
+# Branch Protection Configuration
+# This file documents the required branch protection settings for the key inventory repository
+# These settings should be applied via GitHub CLI or API
+
+branch_protection:
+  main:
+    # Require status checks to pass before merging
+    required_status_checks:
+      strict: true
+      contexts:
+        - "validate-key-creation"
+        - "security-scan"
+        - "compliance-check"
+        - "check-duplicates"
+    
+    # Require pull request reviews before merging
+    required_pull_request_reviews:
+      required_approving_review_count: 2
+      dismiss_stale_reviews: true
+      require_code_owner_reviews: true
+      dismissal_restrictions:
+        users: []
+        teams:
+          - "security-team"
+          - "key-inventory-admins"
+    
+    # Restrict pushes and merges to specific teams
+    restrictions:
+      # Only these teams can push directly (should be empty for main)
+      push_teams: []
+      push_users: []
+      # Only these teams can merge (emergency only)
+      merge_teams:
+        - "key-inventory-admins"
+      merge_users: []
+    
+    # Additional protections
+    enforce_admins: true
+    required_linear_history: true
+    allow_force_pushes: false
+    allow_deletions: false
+    
+    # Require conversation resolution before merging
+    required_conversation_resolution: true
+    
+    # Lock branch (prevent any direct pushes)
+    lock_branch: false
+
+# Environment protection rules
+environments:
+  key-provisioning:
+    required_reviewers:
+      - team: "key-inventory-admins"
+        count: 1
+    wait_timer: 0  # No wait time for provisioning
+    deployment_branches:
+      protected_branches: true
+      custom_branches: []
+  
+  key-deletion:
+    required_reviewers:
+      - team: "key-inventory-admins"
+        count: 1
+      - team: "security-team"
+        count: 1
+    wait_timer: 300  # 5 minute wait for deletions
+    deployment_branches:
+      protected_branches: true
+      custom_branches: []
+  
+  key-rotation:
+    required_reviewers:
+      - team: "key-inventory-admins"
+        count: 1
+    wait_timer: 0  # Automated rotation, no wait
+    deployment_branches:
+      protected_branches: true
+      custom_branches: []
+  
+  emergency-key-ops:
+    required_reviewers:
+      - team: "security-team"
+        count: 1
+    wait_timer: 0  # Emergency operations need to be fast
+    deployment_branches:
+      protected_branches: true
+      custom_branches: []
+
+# Team permissions
+team_permissions:
+  key-inventory-admins:
+    permission: "admin"
+    capabilities:
+      - "approve_pull_requests"
+      - "merge_pull_requests"
+      - "trigger_workflows"
+      - "manage_environments"
+      - "access_audit_logs"
+      - "manage_repository_settings"
+  
+  security-team:
+    permission: "write"
+    capabilities:
+      - "approve_pull_requests"
+      - "trigger_emergency_workflows"
+      - "access_audit_logs"
+      - "manage_security_settings"
+      - "review_compliance"
+  
+  developers:
+    permission: "write"
+    capabilities:
+      - "create_pull_requests"
+      - "create_branches"
+      - "read_repository"
+      - "submit_issues"
+  
+  key-owners:
+    permission: "read"
+    capabilities:
+      - "read_repository"
+      - "submit_issues"
+      - "comment_on_pull_requests"
+
+# Repository settings
+repository_settings:
+  # General settings
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  has_pages: true  # For GitHub Pages documentation
+  
+  # Security settings
+  vulnerability_alerts: true
+  automated_security_fixes: true
+  delete_branch_on_merge: true
+  
+  # Merge settings
+  allow_merge_commit: true
+  allow_squash_merge: true
+  allow_rebase_merge: false
+  
+  # Default branch
+  default_branch: "main"
+
+# GitHub CLI commands to apply these settings
+cli_commands: |
+  # Branch protection
+  gh api repos/:owner/:repo/branches/main/protection \
+    --method PUT \
+    --field required_status_checks='{"strict":true,"contexts":["validate-key-creation","security-scan","compliance-check","check-duplicates"]}' \
+    --field enforce_admins=true \
+    --field required_pull_request_reviews='{"required_approving_review_count":2,"dismiss_stale_reviews":true,"require_code_owner_reviews":true}' \
+    --field restrictions='{"users":[],"teams":[],"apps":[]}'
+  
+  # Create environments
+  gh api repos/:owner/:repo/environments/key-provisioning --method PUT
+  gh api repos/:owner/:repo/environments/key-deletion --method PUT
+  gh api repos/:owner/:repo/environments/key-rotation --method PUT
+  gh api repos/:owner/:repo/environments/emergency-key-ops --method PUT
+  
+  # Set team permissions
+  gh api repos/:owner/:repo/teams/key-inventory-admins --method PUT --field permission=admin
+  gh api repos/:owner/:repo/teams/security-team --method PUT --field permission=write

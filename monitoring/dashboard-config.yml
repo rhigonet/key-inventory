@@ -1,0 +1,314 @@
+# Key Inventory Monitoring Dashboard Configuration
+# This file defines monitoring dashboards and alerting rules
+
+dashboard:
+  name: "Key Inventory Management"
+  description: "Comprehensive monitoring for cryptographic key lifecycle management"
+  refresh_interval: "30s"
+  time_range: "24h"
+  
+  panels:
+    - title: "Key Inventory Overview"
+      type: "stat"
+      description: "High-level statistics about the key inventory"
+      metrics:
+        - name: "total_keys"
+          query: "count(key_inventory_total)"
+          unit: "keys"
+        - name: "active_keys"
+          query: "count(key_inventory_status{status=\"active\"})"
+          unit: "keys"
+        - name: "deprecated_keys"
+          query: "count(key_inventory_status{status=\"deprecated\"})"
+          unit: "keys"
+        - name: "revoked_keys"
+          query: "count(key_inventory_status{status=\"revoked\"})"
+          unit: "keys"
+    
+    - title: "Rotation Status"
+      type: "graph"
+      description: "Key rotation monitoring and trends"
+      time_series: true
+      metrics:
+        - name: "keys_due_for_rotation"
+          query: "count(key_rotation_due_days <= 7)"
+          color: "red"
+        - name: "keys_overdue_for_rotation"
+          query: "count(key_rotation_due_days < 0)"
+          color: "dark-red"
+        - name: "successful_rotations_24h"
+          query: "increase(key_rotations_successful[24h])"
+          color: "green"
+        - name: "failed_rotations_24h"
+          query: "increase(key_rotations_failed[24h])"
+          color: "red"
+    
+    - title: "Compliance Status"
+      type: "pie"
+      description: "Compliance status distribution"
+      metrics:
+        - name: "pci_compliant_keys"
+          query: "count(key_compliance_status{framework=\"pci\", status=\"compliant\"})"
+          color: "green"
+        - name: "sox_compliant_keys"
+          query: "count(key_compliance_status{framework=\"sox\", status=\"compliant\"})"
+          color: "blue"
+        - name: "gdpr_compliant_keys"
+          query: "count(key_compliance_status{framework=\"gdpr\", status=\"compliant\"})"
+          color: "purple"
+        - name: "nist_compliant_keys"
+          query: "count(key_compliance_status{framework=\"nist\", status=\"compliant\"})"
+          color: "orange"
+    
+    - title: "Environment Distribution"
+      type: "donut"
+      description: "Key distribution across environments"
+      metrics:
+        - name: "prod_keys"
+          query: "count(key_inventory_environment{environment=\"prod\"})"
+          color: "red"
+        - name: "staging_keys"
+          query: "count(key_inventory_environment{environment=\"staging\"})"
+          color: "yellow"
+        - name: "dev_keys"
+          query: "count(key_inventory_environment{environment=\"dev\"})"
+          color: "green"
+    
+    - title: "Security Events"
+      type: "table"
+      description: "Recent security events and incidents"
+      columns:
+        - "timestamp"
+        - "event_type"
+        - "key_id"
+        - "severity"
+        - "status"
+      metrics:
+        - name: "emergency_replacements"
+          query: "key_security_events{type=\"emergency_replacement\"}"
+        - name: "unauthorized_access_attempts"
+          query: "key_security_events{type=\"unauthorized_access\"}"
+        - name: "compliance_violations"
+          query: "key_security_events{type=\"compliance_violation\"}"
+        - name: "audit_failures"
+          query: "key_security_events{type=\"audit_failure\"}"
+    
+    - title: "Key Store Health"
+      type: "status"
+      description: "Health status of key management systems"
+      metrics:
+        - name: "aws_kms_health"
+          query: "avg(key_store_health{provider=\"aws-kms\"})"
+          threshold: 95
+        - name: "azure_kv_health"
+          query: "avg(key_store_health{provider=\"azure-kv\"})"
+          threshold: 95
+        - name: "hashicorp_vault_health"
+          query: "avg(key_store_health{provider=\"hashicorp-vault\"})"
+          threshold: 95
+        - name: "custom_store_health"
+          query: "avg(key_store_health{provider=\"custom\"})"
+          threshold: 95
+    
+    - title: "Workflow Performance"
+      type: "graph"
+      description: "GitHub Actions workflow performance"
+      metrics:
+        - name: "key_creation_duration"
+          query: "avg(github_workflow_duration{workflow=\"key-creation\"})"
+          unit: "seconds"
+        - name: "key_deletion_duration"
+          query: "avg(github_workflow_duration{workflow=\"key-deletion\"})"
+          unit: "seconds"
+        - name: "key_rotation_duration"
+          query: "avg(github_workflow_duration{workflow=\"key-rotation\"})"
+          unit: "seconds"
+        - name: "emergency_replacement_duration"
+          query: "avg(github_workflow_duration{workflow=\"emergency-replacement\"})"
+          unit: "seconds"
+    
+    - title: "Risk Assessment Distribution"
+      type: "bar"
+      description: "Distribution of keys by risk assessment level"
+      metrics:
+        - name: "critical_risk_keys"
+          query: "count(key_risk_assessment{level=\"critical\"})"
+          color: "dark-red"
+        - name: "high_risk_keys"
+          query: "count(key_risk_assessment{level=\"high\"})"
+          color: "red"
+        - name: "medium_risk_keys"
+          query: "count(key_risk_assessment{level=\"medium\"})"
+          color: "yellow"
+        - name: "low_risk_keys"
+          query: "count(key_risk_assessment{level=\"low\"})"
+          color: "green"
+
+# Alerting rules and thresholds
+alerts:
+  - name: "Key Rotation Overdue"
+    description: "One or more keys are overdue for rotation"
+    condition: "count(key_rotation_due_days < 0) > 0"
+    severity: "warning"
+    duration: "5m"
+    channels: ["slack", "email"]
+    annotations:
+      summary: "{{ $value }} keys are overdue for rotation"
+      description: "Keys that are overdue: {{ range query \"key_rotation_overdue\" }}{{ .Labels.key_id }}{{ end }}"
+    
+  - name: "Compliance Violation"
+    description: "Compliance violation detected"
+    condition: "increase(key_compliance_violations[5m]) > 0"
+    severity: "critical"
+    duration: "0s"
+    channels: ["slack", "email", "pagerduty"]
+    annotations:
+      summary: "Compliance violation detected"
+      description: "Framework: {{ .Labels.framework }}, Key: {{ .Labels.key_id }}"
+    
+  - name: "Emergency Key Replacement"
+    description: "Emergency key replacement initiated"
+    condition: "increase(key_emergency_replacements[1m]) > 0"
+    severity: "critical"
+    duration: "0s"
+    channels: ["slack", "email", "pagerduty", "sms"]
+    annotations:
+      summary: "Emergency key replacement in progress"
+      description: "Key: {{ .Labels.key_id }}, Incident: {{ .Labels.incident_id }}"
+    
+  - name: "Key Store Down"
+    description: "Key store health below threshold"
+    condition: "avg(key_store_health) < 95"
+    severity: "critical"
+    duration: "2m"
+    channels: ["slack", "email", "pagerduty"]
+    annotations:
+      summary: "Key store {{ .Labels.provider }} health degraded"
+      description: "Health: {{ $value }}%, Threshold: 95%"
+    
+  - name: "Unauthorized Access"
+    description: "Unauthorized access attempt detected"
+    condition: "increase(key_unauthorized_access[5m]) > 0"
+    severity: "high"
+    duration: "0s"
+    channels: ["slack", "email", "security-team"]
+    annotations:
+      summary: "Unauthorized access to key inventory"
+      description: "Key: {{ .Labels.key_id }}, Source: {{ .Labels.source_ip }}"
+    
+  - name: "High Risk Key Created"
+    description: "High or critical risk key created"
+    condition: "increase(key_created{risk_level=~\"high|critical\"}[10m]) > 0"
+    severity: "warning"
+    duration: "0s"
+    channels: ["slack", "security-team"]
+    annotations:
+      summary: "High risk key created"
+      description: "Key: {{ .Labels.key_id }}, Risk: {{ .Labels.risk_level }}"
+    
+  - name: "Workflow Failure Rate High"
+    description: "GitHub Actions workflow failure rate is high"
+    condition: "rate(github_workflow_failures[15m]) > 0.1"
+    severity: "warning"
+    duration: "5m"
+    channels: ["slack"]
+    annotations:
+      summary: "High workflow failure rate detected"
+      description: "Workflow: {{ .Labels.workflow }}, Failure rate: {{ $value }}"
+    
+  - name: "Mass Key Deletion"
+    description: "Multiple keys deleted in short time"
+    condition: "increase(key_deletions[1h]) > 5"
+    severity: "warning"
+    duration: "0s"
+    channels: ["slack", "security-team"]
+    annotations:
+      summary: "Mass key deletion detected"
+      description: "{{ $value }} keys deleted in the last hour"
+
+# Notification channel configurations
+notification_channels:
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#key-inventory-alerts"
+    username: "Key Inventory Bot"
+    icon_emoji: ":key:"
+    title_template: "🔐 {{ .GroupLabels.alertname }}"
+    text_template: |
+      {{ range .Alerts }}
+      *Alert:* {{ .Annotations.summary }}
+      *Severity:* {{ .Labels.severity }}
+      *Description:* {{ .Annotations.description }}
+      {{ end }}
+  
+  email:
+    smtp_server: "${EMAIL_SMTP_SERVER}"
+    smtp_port: 587
+    username: "${EMAIL_USERNAME}"
+    password: "${EMAIL_PASSWORD}"
+    from: "key-inventory@company.com"
+    to: ["key-admins@company.com", "security-team@company.com"]
+    subject_template: "[Key Inventory] {{ .GroupLabels.alertname }}"
+    body_template: |
+      Alert: {{ .GroupLabels.alertname }}
+      
+      {{ range .Alerts }}
+      Summary: {{ .Annotations.summary }}
+      Severity: {{ .Labels.severity }}
+      Description: {{ .Annotations.description }}
+      Time: {{ .StartsAt }}
+      {{ end }}
+  
+  pagerduty:
+    service_key: "${PAGERDUTY_SERVICE_KEY}"
+    severity_mapping:
+      critical: "critical"
+      high: "error"
+      warning: "warning"
+      low: "info"
+  
+  security-team:
+    type: "webhook"
+    url: "${SECURITY_TEAM_WEBHOOK_URL}"
+    headers:
+      Authorization: "Bearer ${SECURITY_TEAM_API_TOKEN}"
+    payload_template: |
+      {
+        "alert": "{{ .GroupLabels.alertname }}",
+        "severity": "{{ .CommonLabels.severity }}",
+        "description": "{{ .CommonAnnotations.description }}",
+        "timestamp": "{{ .CommonLabels.timestamp }}"
+      }
+
+# Metric collection configurations
+metrics:
+  collection_interval: "30s"
+  retention_period: "90d"
+  
+  exporters:
+    prometheus:
+      enabled: true
+      port: 9090
+      metrics_path: "/metrics"
+    
+    datadog:
+      enabled: false
+      api_key: "${DATADOG_API_KEY}"
+      app_key: "${DATADOG_APP_KEY}"
+    
+    cloudwatch:
+      enabled: false
+      region: "${AWS_REGION}"
+      namespace: "KeyInventory"
+
+# Dashboard access control
+access_control:
+  authentication:
+    type: "oauth"
+    providers: ["github"]
+    allowed_orgs: ["your-organization"]
+  
+  authorization:
+    viewers: ["@your-organization/developers"]
+    editors: ["@your-organization/key-inventory-admins"]
+    admins: ["@your-organization/security-team"]

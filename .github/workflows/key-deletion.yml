@@ -1,0 +1,221 @@
+name: Key Deletion Workflow
+
+on:
+  pull_request:
+    paths:
+      - 'inventory/*.yaml'
+      - 'inventory/*.yml'
+    types: [opened, synchronize, reopened]
+  
+  workflow_dispatch:
+    inputs:
+      key_id:
+        description: 'Key ID to delete'
+        required: true
+        type: string
+      reason:
+        description: 'Reason for deletion'
+        required: true
+        type: string
+      emergency:
+        description: 'Emergency deletion'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  validate-deletion:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema requests
+      
+      - name: Detect deleted files
+        id: deleted-files
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            inventory/*.yaml
+            inventory/*.yml
+          files_deleted: true
+      
+      - name: Validate deletion request
+        run: |
+          if [ -n "${{ steps.deleted-files.outputs.deleted_files }}" ]; then
+            python scripts/validate-deletion.py ${{ steps.deleted-files.outputs.deleted_files }}
+          else
+            echo "No deleted files detected"
+          fi
+      
+      - name: Check dependencies
+        run: |
+          if [ -n "${{ steps.deleted-files.outputs.deleted_files }}" ]; then
+            python scripts/check-key-dependencies.py ${{ steps.deleted-files.outputs.deleted_files }}
+          fi
+      
+      - name: Compliance check for deletion
+        run: |
+          if [ -n "${{ steps.deleted-files.outputs.deleted_files }}" ]; then
+            python scripts/compliance-deletion-check.py ${{ steps.deleted-files.outputs.deleted_files }}
+          fi
+      
+      - name: Generate deletion impact report
+        run: |
+          if [ -n "${{ steps.deleted-files.outputs.deleted_files }}" ]; then
+            python scripts/deletion-impact-report.py ${{ steps.deleted-files.outputs.deleted_files }}
+          fi
+      
+      - name: Add deletion report to PR
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = '';
+            
+            if (fs.existsSync('deletion-report.md')) {
+              comment = fs.readFileSync('deletion-report.md', 'utf8');
+            }
+            
+            if (fs.existsSync('dependency-check-results.txt')) {
+              comment += '\n\n### Dependency Check Results:\n';
+              comment += '```\n' + fs.readFileSync('dependency-check-results.txt', 'utf8') + '\n```';
+            }
+            
+            if (fs.existsSync('compliance-deletion-results.txt')) {
+              comment += '\n\n### Compliance Check Results:\n';
+              comment += fs.readFileSync('compliance-deletion-results.txt', 'utf8');
+            }
+            
+            if (comment) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+
+  execute-deletion:
+    runs-on: ubuntu-latest
+    needs: validate-deletion
+    if: (github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch')
+    environment: key-deletion
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml boto3 azure-identity azure-keyvault-keys hvac
+      
+      - name: Setup cloud credentials
+        run: |
+          echo "Setting up credentials for key store access"
+      
+      - name: Identify keys to delete
+        id: keys-to-delete
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual deletion via workflow dispatch
+            echo "${{ inputs.key_id }}" > keys_to_delete.txt
+          else
+            # PR-based deletion - get deleted files from the merge
+            git diff --name-only --diff-filter=D HEAD~1 HEAD | grep -E 'inventory/.*\.ya?ml$' > keys_to_delete.txt || true
+            # Extract key IDs from filenames
+            sed 's|inventory/||g; s|\.ya?ml||g' keys_to_delete.txt > key_ids_to_delete.txt
+          fi
+          
+          echo "Keys to delete:"
+          cat keys_to_delete.txt || echo "No keys to delete"
+      
+      - name: Revoke keys in target stores
+        run: |
+          if [ -s keys_to_delete.txt ]; then
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              python scripts/revoke-key.py --key-id="${{ inputs.key_id }}" --reason="${{ inputs.reason }}"
+            else
+              python scripts/revoke-key.py --files-from keys_to_delete.txt
+            fi
+          else
+            echo "No keys to revoke"
+          fi
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+      
+      - name: Update audit trail
+        run: |
+          if [ -s keys_to_delete.txt ]; then
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              python scripts/update-audit-trail.py --action=deleted --key-id="${{ inputs.key_id }}" --reason="${{ inputs.reason }}"
+            else
+              python scripts/update-audit-trail.py --action=deleted --files-from keys_to_delete.txt --pr-number=${{ github.event.pull_request.number }}
+            fi
+          fi
+      
+      - name: Send deletion notification
+        run: |
+          if [ -s keys_to_delete.txt ]; then
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              python scripts/send-notification.py --type=key-deleted --key-id="${{ inputs.key_id }}"
+            else
+              python scripts/send-notification.py --type=key-deleted --pr-number=${{ github.event.pull_request.number }}
+            fi
+          fi
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+      
+      - name: Emergency procedures
+        if: ${{ inputs.emergency == true }}
+        run: |
+          python scripts/emergency-procedures.py --key-id="${{ inputs.key_id }}" --action=delete
+        env:
+          PAGERDUTY_API_KEY: ${{ secrets.PAGERDUTY_API_KEY }}
+      
+      - name: Update documentation
+        run: |
+          python build-data.py --include-metadata
+          
+          # Commit and push the updated documentation
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/keys.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "docs: update key inventory after deletion [skip ci]"
+            git push
+          fi
