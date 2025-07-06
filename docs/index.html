@@ -3,684 +3,1129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Inventory Management</title>
+    <title>Key Lifecycle Management</title>
     <style>
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #3b82f6;
-            --background-color: #f8fafc;
-            --card-background: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* Modern CSS Custom Properties inspired by v0 design */
+            --background: 249 250 251;
+            --foreground: 15 23 42;
+            --card: 255 255 255;
+            --card-foreground: 15 23 42;
+            --primary: 37 99 235;
+            --primary-foreground: 255 255 255;
+            --secondary: 241 245 249;
+            --secondary-foreground: 15 23 42;
+            --muted: 248 250 252;
+            --muted-foreground: 100 116 139;
+            --accent: 241 245 249;
+            --accent-foreground: 15 23 42;
+            --destructive: 239 68 68;
+            --destructive-foreground: 255 255 255;
+            --border: 226 232 240;
+            --input: 226 232 240;
+            --ring: 37 99 235;
+            --success: 34 197 94;
+            --warning: 245 158 11;
+            --info: 59 130 246;
+            --radius: 0.5rem;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-primary);
-            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: rgb(var(--background));
+            color: rgb(var(--foreground));
+            line-height: 1.5;
+            min-height: 100vh;
         }
-        
-        .container {
+
+        /* Header Styles */
+        .header {
+            background: rgb(var(--card));
+            border-bottom: 1px solid rgb(var(--border));
+            padding: 1rem 1.5rem;
+        }
+
+        .header-content {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        
-        .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-        
-        .header h1 {
-            font-size: 2.5rem;
+
+        .header-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgb(var(--primary));
+            border-radius: var(--radius);
+            color: rgb(var(--primary-foreground));
+            font-size: 1.25rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
             font-weight: 700;
+            color: rgb(var(--foreground));
+            margin-bottom: 0.125rem;
+        }
+
+        .header-title p {
+            font-size: 0.875rem;
+            color: rgb(var(--muted-foreground));
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: rgb(var(--muted-foreground));
+        }
+
+        .status-indicator {
+            width: 0.5rem;
+            height: 0.5rem;
+            background: rgb(var(--success));
+            border-radius: 50%;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-primary {
+            background: rgb(var(--primary));
+            color: rgb(var(--primary-foreground));
+        }
+
+        .btn-primary:hover {
+            background: rgb(30 58 138);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgb(var(--secondary));
+            color: rgb(var(--secondary-foreground));
+            border: 1px solid rgb(var(--border));
+        }
+
+        .btn-secondary:hover {
+            background: rgb(var(--accent));
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: rgb(var(--foreground));
+            border: 1px solid rgb(var(--border));
+        }
+
+        .btn-outline:hover {
+            background: rgb(var(--accent));
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: rgb(var(--foreground));
+        }
+
+        .btn-ghost:hover {
+            background: rgb(var(--accent));
+        }
+
+        .btn-destructive {
+            background: rgb(var(--destructive));
+            color: rgb(var(--destructive-foreground));
+        }
+
+        .btn-destructive:hover {
+            background: rgb(220 38 38);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-container {
+            background: rgb(var(--card));
+            border-bottom: 1px solid rgb(var(--border));
+            padding: 0 1.5rem;
+        }
+
+        .nav-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgb(var(--muted-foreground));
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: rgb(var(--foreground));
+            background: rgb(var(--muted));
+        }
+
+        .nav-tab.active {
+            color: rgb(var(--primary));
+            border-bottom-color: rgb(var(--primary));
+            background: rgb(239 246 255);
+        }
+
+        .nav-icon {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgb(var(--card));
+            border: 1px solid rgb(var(--border));
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .card-header {
+            padding: 1.5rem 1.5rem 0;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-description {
+            font-size: 0.875rem;
+            color: rgb(var(--muted-foreground));
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgb(var(--card));
+            border: 1px solid rgb(var(--border));
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 0.5rem;
         }
-        
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgb(var(--muted-foreground));
         }
-        
-        .controls {
-            background: var(--card-background);
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
+
+        .stat-icon {
+            width: 1rem;
+            height: 1rem;
+            color: rgb(var(--muted-foreground));
         }
-        
-        .controls-grid {
-            display: grid;
-            grid-template-columns: 1fr auto auto auto;
-            gap: 1rem;
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-description {
+            font-size: 0.75rem;
+            color: rgb(var(--muted-foreground));
+        }
+
+        /* Badge Styles */
+        .badge {
+            display: inline-flex;
             align-items: center;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
         }
-        
-        .search-container {
+
+        .badge-default {
+            background: rgb(var(--secondary));
+            color: rgb(var(--secondary-foreground));
+        }
+
+        .badge-outline {
+            border: 1px solid rgb(var(--border));
+            background: transparent;
+        }
+
+        .badge-destructive {
+            background: rgb(252 165 165);
+            color: rgb(185 28 28);
+        }
+
+        .badge-warning {
+            background: rgb(254 243 199);
+            color: rgb(180 83 9);
+        }
+
+        .badge-success {
+            background: rgb(187 247 208);
+            color: rgb(21 128 61);
+        }
+
+        /* Progress Bar */
+        .progress {
+            background: rgb(var(--secondary));
+            border-radius: 9999px;
+            height: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: rgb(var(--primary));
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        /* Table Styles */
+        .table-container {
+            border: 1px solid rgb(var(--border));
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgb(var(--border));
+        }
+
+        .table th {
+            background: rgb(var(--muted));
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: rgb(var(--muted-foreground));
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover {
+            background: rgb(var(--muted));
+        }
+
+        /* Input Styles */
+        .input {
+            display: flex;
+            width: 100%;
+            border-radius: var(--radius);
+            border: 1px solid rgb(var(--input));
+            background: rgb(var(--background));
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: rgb(var(--ring));
+            box-shadow: 0 0 0 3px rgba(var(--ring), 0.1);
+        }
+
+        .input-with-icon {
             position: relative;
         }
-        
-        .search-input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+
+        .input-with-icon input {
+            padding-left: 2.5rem;
         }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        
-        .search-icon {
+
+        .input-icon {
             position: absolute;
             left: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-secondary);
-            font-size: 1.25rem;
+            color: rgb(var(--muted-foreground));
+            width: 1rem;
+            height: 1rem;
         }
-        
-        .filter-select {
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            background: white;
-            min-width: 150px;
+
+        /* Select Styles */
+        .select {
+            display: flex;
+            width: 100%;
+            border-radius: var(--radius);
+            border: 1px solid rgb(var(--input));
+            background: rgb(var(--background));
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: border-color 0.2s;
         }
-        
-        .filter-select:focus {
+
+        .select:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: rgb(var(--ring));
         }
-        
-        .stats {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
         }
-        
-        .stats-item {
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .grid-cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .nav-tabs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-tab {
+                padding: 0.75rem 1rem;
+                font-size: 0.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav-tabs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .flex {
             display: flex;
+        }
+
+        .items-center {
             align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
             gap: 0.5rem;
         }
-        
-        .stats-number {
-            font-weight: 600;
-            color: var(--primary-color);
+
+        .gap-4 {
+            gap: 1rem;
         }
-        
-        .keys-grid {
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Custom additions for key management */
+        .key-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 2rem;
         }
-        
+
         .key-card {
-            background: var(--card-background);
-            border-radius: 12px;
+            background: rgb(var(--card));
+            border: 1px solid rgb(var(--border));
+            border-radius: var(--radius);
             padding: 1.5rem;
-            box-shadow: var(--shadow);
             transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid var(--border-color);
         }
-        
+
         .key-card:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        
-        .key-card-header {
+
+        .key-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 1rem;
         }
-        
+
         .key-alias {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             font-weight: 600;
-            color: var(--text-primary);
             margin-bottom: 0.25rem;
         }
-        
+
         .key-id {
             font-size: 0.75rem;
-            color: var(--text-secondary);
+            color: rgb(var(--muted-foreground));
             font-family: 'Monaco', 'Menlo', monospace;
-            background: var(--background-color);
+            background: rgb(var(--muted));
             padding: 0.25rem 0.5rem;
-            border-radius: 4px;
+            border-radius: 0.25rem;
             word-break: break-all;
         }
-        
-        .environment-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .env-prod {
-            background: #fef2f2;
-            color: #dc2626;
-        }
-        
-        .env-staging {
-            background: #fef3c7;
-            color: #d97706;
-        }
-        
-        .env-dev {
-            background: #f0fdf4;
-            color: #16a34a;
-        }
-        
+
         .key-details {
             display: grid;
             gap: 0.75rem;
+            margin-bottom: 1rem;
         }
-        
+
         .detail-item {
             display: flex;
-            align-items: flex-start;
             gap: 0.5rem;
         }
-        
+
         .detail-label {
             font-weight: 500;
-            color: var(--text-secondary);
+            color: rgb(var(--muted-foreground));
             min-width: 80px;
             font-size: 0.875rem;
         }
-        
+
         .detail-value {
-            color: var(--text-primary);
+            color: rgb(var(--foreground));
             font-size: 0.875rem;
             flex: 1;
         }
-        
+
         .compliance-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.5rem;
-            margin-top: 0.5rem;
+            margin: 0.75rem 0;
         }
-        
+
         .compliance-item {
             padding: 0.5rem;
-            background: var(--background-color);
-            border-radius: 6px;
+            background: rgb(var(--muted));
+            border-radius: 0.375rem;
             font-size: 0.75rem;
             text-align: center;
+            font-weight: 500;
         }
-        
-        .pci-scope {
-            font-weight: 600;
-        }
-        
-        .nist-classification {
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
+
         .tags {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
-            margin-top: 0.5rem;
+            margin: 0.75rem 0;
         }
-        
+
         .tag {
-            background: var(--accent-color);
-            color: white;
+            background: rgb(var(--primary));
+            color: rgb(var(--primary-foreground));
             padding: 0.25rem 0.5rem;
-            border-radius: 12px;
+            border-radius: 0.75rem;
             font-size: 0.75rem;
             font-weight: 500;
         }
-        
+
         .key-actions {
             display: flex;
             gap: 0.5rem;
-            margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid rgb(var(--border));
         }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #b91c1c;
-            transform: translateY(-1px);
-        }
-        
-        .btn-secondary {
-            background: var(--background-color);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-        
-        .btn-secondary:hover {
-            background: var(--border-color);
-            color: var(--text-primary);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-        
-        .modal-content {
-            background-color: var(--card-background);
-            margin: 15% auto;
-            padding: 2rem;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .close {
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-        
-        .close:hover {
-            color: var(--text-primary);
-        }
-        
-        .modal-body {
-            margin-bottom: 1.5rem;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
-        
-        .warning-text {
-            color: #dc2626;
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-        
-        .key-info {
-            background: var(--background-color);
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-        
-        .key-info code {
-            font-family: 'Monaco', 'Menlo', monospace;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-        }
-        
-        .steps-container {
-            margin: 1rem 0;
-        }
-        
-        .step {
-            background: var(--background-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .step-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .step-number {
-            background: var(--primary-color);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .step-title {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .step-description {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-        }
-        
-        .step-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--secondary-color);
-        }
-        
-        .copy-text {
-            background: var(--background-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 0.5rem;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.75rem;
-            margin: 0.5rem 0;
-            word-break: break-all;
-            position: relative;
-        }
-        
-        .copy-btn {
-            position: absolute;
-            top: 0.25rem;
-            right: 0.25rem;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-        
-        .copy-btn:hover {
-            background: var(--secondary-color);
-        }
-        
-        .info-box {
-            background: #eff6ff;
-            border: 1px solid #3b82f6;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .info-box h4 {
-            color: #1e40af;
-            margin-bottom: 0.5rem;
-        }
-        
-        .info-box p {
-            color: #1e3a8a;
-            font-size: 0.875rem;
-        }
-        
+
         .rotation-warning {
-            color: #dc2626;
+            color: rgb(var(--warning));
             font-weight: 600;
         }
-        
+
         .rotation-ok {
-            color: #16a34a;
+            color: rgb(var(--success));
             font-weight: 600;
         }
-        
+
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
-            color: var(--text-secondary);
+            color: rgb(var(--muted-foreground));
         }
-        
+
         .empty-state h3 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
-        
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .controls-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .stats {
-                justify-content: center;
-            }
-            
-            .keys-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .key-card {
-                padding: 1rem;
-            }
+
+        /* Activity feed styles */
+        .activity-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgb(var(--border));
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-indicator {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .activity-indicator.success {
+            background: rgb(var(--success));
+        }
+
+        .activity-indicator.warning {
+            background: rgb(var(--warning));
+        }
+
+        .activity-indicator.error {
+            background: rgb(var(--destructive));
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+
+        .activity-description {
+            font-size: 0.75rem;
+            color: rgb(var(--muted-foreground));
+        }
+
+        .activity-meta {
+            text-align: right;
+            font-size: 0.75rem;
+            color: rgb(var(--muted-foreground));
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
-        <div class="container">
-            <h1>🔐 Key Inventory Management</h1>
-            <p>Centralized cryptographic key tracking and lifecycle management</p>
+        <div class="header-content">
+            <div class="header-brand">
+                <div class="header-icon">🔐</div>
+                <div class="header-title">
+                    <h1>Key Lifecycle Management</h1>
+                    <p>Comprehensive cryptographic key management system</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="system-status">
+                    <div class="status-indicator"></div>
+                    <span>System Healthy</span>
+                </div>
+                <button class="btn btn-primary">
+                    <span>➕</span>
+                    New Key Request
+                </button>
+            </div>
         </div>
     </header>
-    
-    <div class="container">
-        <div class="controls">
-            <div class="controls-grid">
-                <div class="search-container">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="search" class="search-input" placeholder="Search keys by alias, owner, purpose, or tags...">
-                </div>
-                <select id="environment-filter" class="filter-select">
-                    <option value="">All Environments</option>
-                </select>
-                <select id="compliance-filter" class="filter-select">
-                    <option value="">All Compliance</option>
-                </select>
-                <div class="stats">
-                    <div class="stats-item">
-                        <span>Total:</span>
-                        <span class="stats-number" id="total-keys">0</span>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-container">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">
+                <span class="nav-icon">📊</span>
+                Dashboard
+            </button>
+            <button class="nav-tab" data-tab="keys">
+                <span class="nav-icon">🔑</span>
+                Key Management
+            </button>
+            <button class="nav-tab" data-tab="compliance">
+                <span class="nav-icon">🛡️</span>
+                Compliance
+            </button>
+            <button class="nav-tab" data-tab="monitoring">
+                <span class="nav-icon">⚠️</span>
+                Monitoring
+            </button>
+            <button class="nav-tab" data-tab="audit">
+                <span class="nav-icon">📄</span>
+                Audit Trail
+            </button>
+            <button class="nav-tab" data-tab="emergency">
+                <span class="nav-icon">🚨</span>
+                Emergency
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active space-y-6">
+            <!-- Key Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Keys</span>
+                        <span class="stat-icon">🔑</span>
                     </div>
-                    <div class="stats-item">
-                        <span>Showing:</span>
-                        <span class="stats-number" id="visible-keys">0</span>
+                    <div class="stat-value" id="total-keys-stat">0</div>
+                    <div class="stat-description">
+                        <span style="color: rgb(var(--success));">+12</span> from last month
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Active Keys</span>
+                        <span class="stat-icon">✅</span>
+                    </div>
+                    <div class="stat-value" style="color: rgb(var(--success));" id="active-keys-stat">0</div>
+                    <div class="stat-description" id="active-keys-percentage">0% of total</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Need Rotation</span>
+                        <span class="stat-icon">🕒</span>
+                    </div>
+                    <div class="stat-value" style="color: rgb(var(--warning));" id="rotation-keys-stat">0</div>
+                    <div class="stat-description">Require attention within 7 days</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Compliance Score</span>
+                        <span class="stat-icon">🛡️</span>
+                    </div>
+                    <div class="stat-value" style="color: rgb(var(--info));" id="compliance-score-stat">0%</div>
+                    <div class="progress mt-2">
+                        <div class="progress-bar" id="compliance-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Environment Distribution and Compliance Overview -->
+            <div class="grid grid-cols-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Environment Distribution</h3>
+                        <p class="card-description">Keys distributed across environments</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="space-y-4" id="environment-distribution">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Compliance Overview</h3>
+                        <p class="card-description">Compliance status across frameworks</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm">PCI DSS</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="progress" style="width: 5rem;">
+                                        <div class="progress-bar" style="width: 96%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium">96%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm">SOX</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="progress" style="width: 5rem;">
+                                        <div class="progress-bar" style="width: 94%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium">94%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm">GDPR</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="progress" style="width: 5rem;">
+                                        <div class="progress-bar" style="width: 92%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium">92%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm">NIST</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="progress" style="width: 5rem;">
+                                        <div class="progress-bar" style="width: 98%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium">98%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities and Upcoming Rotations -->
+            <div class="grid grid-cols-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Activities</h3>
+                        <p class="card-description">Latest key management operations</p>
+                    </div>
+                    <div class="card-content">
+                        <div id="recent-activities">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Upcoming Rotations</h3>
+                        <p class="card-description">Keys scheduled for rotation</p>
+                    </div>
+                    <div class="card-content">
+                        <div id="upcoming-rotations">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Quick Actions</h3>
+                    <p class="card-description">Common key management operations</p>
+                </div>
+                <div class="card-content">
+                    <div class="grid grid-cols-4 gap-4">
+                        <button class="btn btn-outline" style="height: 5rem; flex-direction: column;">
+                            <span style="font-size: 1.5rem;">🔑</span>
+                            <span class="text-sm">Create Key</span>
+                        </button>
+                        <button class="btn btn-outline" style="height: 5rem; flex-direction: column;">
+                            <span style="font-size: 1.5rem;">🔄</span>
+                            <span class="text-sm">Rotate Keys</span>
+                        </button>
+                        <button class="btn btn-outline" style="height: 5rem; flex-direction: column;">
+                            <span style="font-size: 1.5rem;">📊</span>
+                            <span class="text-sm">Compliance Report</span>
+                        </button>
+                        <button class="btn btn-outline" style="height: 5rem; flex-direction: column;">
+                            <span style="font-size: 1.5rem;">🚨</span>
+                            <span class="text-sm">Emergency Response</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div id="keys-container" class="keys-grid"></div>
-    </div>
-    
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Delete Cryptographic Key</h3>
-                <span class="close" onclick="hideDeleteModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="warning-text">
-                    ⚠️ Warning: This action will create a pull request to permanently delete this key from the inventory.
+
+        <!-- Key Management Tab -->
+        <div id="keys" class="tab-content space-y-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Key Inventory</h3>
+                    <p class="card-description">Manage and monitor your cryptographic keys</p>
                 </div>
-                
-                <div class="key-info">
-                    <p><strong>Key ID:</strong> <code id="deleteKeyId"></code></p>
-                    <p><strong>Alias:</strong> <code id="deleteKeyAlias"></code></p>
-                    <p><strong>File:</strong> <code id="deleteKeyFile"></code></p>
-                </div>
-                
-                <div class="info-box">
-                    <h4>📝 How This Works</h4>
-                    <p>This will guide you through GitHub's web interface to safely delete the key. You'll create a branch, delete the file, and submit a pull request for team review.</p>
-                </div>
-                
-                <div style="margin-top: 1rem;">
-                    <label for="deleteReason" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Reason for deletion:</label>
-                    <textarea id="deleteReason" placeholder="e.g., Key retired due to service decommissioning" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; min-height: 80px; resize: vertical;"></textarea>
-                </div>
-                
-                <div class="steps-container" id="deleteSteps" style="display: none;">
-                    <div class="step">
-                        <div class="step-header">
-                            <div class="step-number">1</div>
-                            <div class="step-title">Create a new branch</div>
+                <div class="card-content">
+                    <!-- Search and Filters -->
+                    <div class="flex gap-4 mb-6">
+                        <div class="flex-1">
+                            <div class="input-with-icon">
+                                <span class="input-icon">🔍</span>
+                                <input type="text" id="search" class="input" placeholder="Search keys by alias, owner, purpose, or tags...">
+                            </div>
                         </div>
-                        <div class="step-description">
-                            Create a dedicated branch for this key deletion to keep changes isolated.
-                        </div>
-                        <div class="step-actions">
-                            <a id="createBranchLink" href="#" target="_blank" class="btn btn-primary">
-                                🌱 Create Branch on GitHub
-                            </a>
-                        </div>
-                        <div class="copy-text">
-                            Branch name: <span id="branchName"></span>
-                            <button class="copy-btn" onclick="copyToClipboard('branchName')">Copy</button>
+                        <select id="environment-filter" class="select" style="min-width: 12rem;">
+                            <option value="">All Environments</option>
+                        </select>
+                        <select id="compliance-filter" class="select" style="min-width: 12rem;">
+                            <option value="">All Compliance</option>
+                        </select>
+                        <div class="flex items-center gap-4 text-sm" style="color: rgb(var(--muted-foreground));">
+                            <div class="flex items-center gap-2">
+                                <span>Total:</span>
+                                <span class="font-semibold" style="color: rgb(var(--primary));" id="total-keys">0</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span>Showing:</span>
+                                <span class="font-semibold" style="color: rgb(var(--primary));" id="visible-keys">0</span>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="step">
-                        <div class="step-header">
-                            <div class="step-number">2</div>
-                            <div class="step-title">Delete the key file</div>
-                        </div>
-                        <div class="step-description">
-                            Navigate to the key file in your new branch and delete it.
-                        </div>
-                        <div class="step-actions">
-                            <a id="deleteFileLink" href="#" target="_blank" class="btn btn-danger">
-                                🗑️ Delete File on GitHub
-                            </a>
-                        </div>
-                        <div class="copy-text">
-                            Commit message: <span id="commitMessage"></span>
-                            <button class="copy-btn" onclick="copyToClipboard('commitMessage')">Copy</button>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-header">
-                            <div class="step-number">3</div>
-                            <div class="step-title">Create pull request</div>
-                        </div>
-                        <div class="step-description">
-                            Submit a pull request to merge your deletion branch into main.
-                        </div>
-                        <div class="step-actions">
-                            <a id="createPRLink" href="#" target="_blank" class="btn btn-primary">
-                                📝 Create Pull Request
-                            </a>
-                        </div>
-                        <div class="copy-text">
-                            PR title: <span id="prTitle"></span>
-                            <button class="copy-btn" onclick="copyToClipboard('prTitle')">Copy</button>
-                        </div>
-                        <div class="copy-text" style="margin-top: 0.5rem;">
-                            PR description: <span id="prDescription"></span>
-                            <button class="copy-btn" onclick="copyToClipboard('prDescription')">Copy</button>
-                        </div>
-                    </div>
+
+                    <!-- Keys Grid -->
+                    <div id="keys-container" class="key-grid"></div>
                 </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="hideDeleteModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="generateDeleteSteps()">Generate GitHub Steps</button>
             </div>
         </div>
-    </div>
+
+        <!-- Compliance Tab -->
+        <div id="compliance" class="tab-content space-y-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Compliance Tracking</h3>
+                    <p class="card-description">Monitor compliance across different frameworks</p>
+                </div>
+                <div class="card-content">
+                    <div class="text-center p-4">
+                        <h3 class="text-lg font-semibold mb-2">Compliance Dashboard</h3>
+                        <p style="color: rgb(var(--muted-foreground));">Detailed compliance tracking and reporting features coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoring Tab -->
+        <div id="monitoring" class="tab-content space-y-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Monitoring & Alerts</h3>
+                    <p class="card-description">Real-time monitoring and alerting system</p>
+                </div>
+                <div class="card-content">
+                    <div class="text-center p-4">
+                        <h3 class="text-lg font-semibold mb-2">Monitoring Dashboard</h3>
+                        <p style="color: rgb(var(--muted-foreground));">Advanced monitoring and alerting features coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Tab -->
+        <div id="audit" class="tab-content space-y-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Audit Trail</h3>
+                    <p class="card-description">Complete audit log of all key operations</p>
+                </div>
+                <div class="card-content">
+                    <div class="text-center p-4">
+                        <h3 class="text-lg font-semibold mb-2">Audit Trail</h3>
+                        <p style="color: rgb(var(--muted-foreground));">Comprehensive audit logging features coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Tab -->
+        <div id="emergency" class="tab-content space-y-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Emergency Procedures</h3>
+                    <p class="card-description">Emergency response and key compromise handling</p>
+                </div>
+                <div class="card-content">
+                    <div class="text-center p-4">
+                        <h3 class="text-lg font-semibold mb-2">Emergency Response</h3>
+                        <p style="color: rgb(var(--muted-foreground));">Emergency procedures and incident response features coming soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const keysContainer = document.getElementById('keys-container');
-            const searchInput = document.getElementById('search');
-            const environmentFilter = document.getElementById('environment-filter');
-            const complianceFilter = document.getElementById('compliance-filter');
-            const totalKeysElement = document.getElementById('total-keys');
-            const visibleKeysElement = document.getElementById('visible-keys');
-            let keys = [];
+        // Global variables
+        let keys = [];
+        let activeTab = 'dashboard';
 
+        // DOM elements
+        const keysContainer = document.getElementById('keys-container');
+        const searchInput = document.getElementById('search');
+        const environmentFilter = document.getElementById('environment-filter');
+        const complianceFilter = document.getElementById('compliance-filter');
+        const totalKeysElement = document.getElementById('total-keys');
+        const visibleKeysElement = document.getElementById('visible-keys');
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            initTabs();
+            loadKeysData();
+        });
+
+        // Tab management
+        function initTabs() {
+            const tabButtons = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.dataset.tab;
+                    
+                    // Update active tab
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    button.classList.add('active');
+                    document.getElementById(tabName).classList.add('active');
+                    
+                    activeTab = tabName;
+                });
+            });
+        }
+
+        // Load keys data
+        function loadKeysData() {
             fetch('keys.json')
                 .then(response => response.json())
                 .then(data => {
@@ -697,260 +1142,335 @@
                     } else {
                         keys = [];
                     }
+                    
                     populateFilters(keys);
                     renderKeys(keys);
-                    updateStats(keys.length, keys.length);
+                    updateStats(keys);
+                    updateDashboard(keys);
                 })
                 .catch(error => {
                     console.error('Error loading keys:', error);
                     keysContainer.innerHTML = '<div class="empty-state"><h3>Error loading keys</h3><p>Please check the console for details.</p></div>';
                 });
-
-            function populateFilters(keys) {
-                const environments = [...new Set(keys.map(key => key.environment))].sort();
-                const complianceTypes = [...new Set(keys.map(key => key.compliance.nist_classification))].sort();
-                
-                environments.forEach(env => {
-                    const option = document.createElement('option');
-                    option.value = env;
-                    option.textContent = env.charAt(0).toUpperCase() + env.slice(1);
-                    environmentFilter.appendChild(option);
-                });
-                
-                complianceTypes.forEach(type => {
-                    const option = document.createElement('option');
-                    option.value = type;
-                    option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
-                    complianceFilter.appendChild(option);
-                });
-            }
-
-            function getRotationStatus(createdAt, rotationDays) {
-                const created = new Date(createdAt);
-                const now = new Date();
-                const daysSinceCreation = Math.floor((now - created) / (1000 * 60 * 60 * 24));
-                const daysUntilRotation = rotationDays - daysSinceCreation;
-                
-                if (daysUntilRotation <= 0) {
-                    return { status: 'overdue', message: `${Math.abs(daysUntilRotation)} days overdue`, class: 'rotation-warning' };
-                } else if (daysUntilRotation <= 30) {
-                    return { status: 'warning', message: `${daysUntilRotation} days remaining`, class: 'rotation-warning' };
-                } else {
-                    return { status: 'ok', message: `${daysUntilRotation} days remaining`, class: 'rotation-ok' };
-                }
-            }
-
-            function renderKeys(keysToRender) {
-                if (keysToRender.length === 0) {
-                    keysContainer.innerHTML = '<div class="empty-state"><h3>No keys found</h3><p>Try adjusting your search criteria.</p></div>';
-                    return;
-                }
-                
-                keysContainer.innerHTML = '';
-                keysToRender.forEach(key => {
-                    const rotationStatus = getRotationStatus(key.created_at, key.rotation_interval_days);
-                    const keyCard = document.createElement('div');
-                    keyCard.className = 'key-card';
-                    keyCard.innerHTML = `
-                        <div class="key-card-header">
-                            <div>
-                                <div class="key-alias">${key.alias}</div>
-                                <div class="key-id">${key.key_id}</div>
-                            </div>
-                            <div class="environment-badge env-${key.environment}">${key.environment}</div>
-                        </div>
-                        
-                        <div class="key-details">
-                            <div class="detail-item">
-                                <span class="detail-label">Owner:</span>
-                                <span class="detail-value">${key.owner}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Purpose:</span>
-                                <span class="detail-value">${key.purpose}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Created:</span>
-                                <span class="detail-value">${new Date(key.created_at).toLocaleDateString()}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Rotation:</span>
-                                <span class="detail-value ${rotationStatus.class}">${rotationStatus.message}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Location:</span>
-                                <span class="detail-value" style="font-family: Monaco, monospace; font-size: 0.75rem; word-break: break-all;">${key.location}</span>
-                            </div>
-                            
-                            <div class="compliance-grid">
-                                <div class="compliance-item">
-                                    <div class="pci-scope">PCI: ${key.compliance.pci_scope}</div>
-                                </div>
-                                <div class="compliance-item">
-                                    <div class="nist-classification">NIST: ${key.compliance.nist_classification}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="tags">
-                                ${key.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            </div>
-                            
-                            <div class="key-actions">
-                                <button class="btn btn-danger" onclick="showDeleteModal('${key.key_id}', '${key.alias}')">
-                                    🗑️ Delete Key
-                                </button>
-                                <a href="https://github.com/rhigonet/key-inventory/blob/main/inventory/${key.key_id}.yaml" target="_blank" class="btn btn-secondary">
-                                    📝 View YAML
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                    keysContainer.appendChild(keyCard);
-                });
-            }
-
-            function updateStats(total, visible) {
-                totalKeysElement.textContent = total;
-                visibleKeysElement.textContent = visible;
-            }
-
-            function displayBuildInfo(metadata) {
-                // Add build info to the page if metadata is available
-                const header = document.querySelector('.header .container');
-                if (metadata && header) {
-                    const buildInfo = document.createElement('div');
-                    buildInfo.style.marginTop = '10px';
-                    buildInfo.style.fontSize = '0.9rem';
-                    buildInfo.style.opacity = '0.8';
-                    
-                    let infoText = `Built: ${new Date(metadata.build_timestamp).toLocaleString()}`;
-                    if (metadata.schema_version) {
-                        infoText += ` | Schema: v${metadata.schema_version}`;
-                    }
-                    if (metadata.statistics && metadata.statistics.schema_usage) {
-                        const enhanced = metadata.statistics.schema_usage.enhanced_schema_v2 || 0;
-                        const legacy = metadata.statistics.schema_usage.legacy_schema_v1 || 0;
-                        infoText += ` | Enhanced: ${enhanced}, Legacy: ${legacy}`;
-                    }
-                    
-                    buildInfo.textContent = infoText;
-                    header.appendChild(buildInfo);
-                }
-            }
-
-            function filterKeys() {
-                const searchTerm = searchInput.value.toLowerCase();
-                const selectedEnvironment = environmentFilter.value;
-                const selectedCompliance = complianceFilter.value;
-
-                const filteredKeys = keys.filter(key => {
-                    const matchesSearch = 
-                        key.alias.toLowerCase().includes(searchTerm) ||
-                        key.owner.toLowerCase().includes(searchTerm) ||
-                        key.purpose.toLowerCase().includes(searchTerm) ||
-                        key.tags.some(tag => tag.toLowerCase().includes(searchTerm));
-                    
-                    const matchesEnvironment = selectedEnvironment ? key.environment === selectedEnvironment : true;
-                    const matchesCompliance = selectedCompliance ? key.compliance.nist_classification === selectedCompliance : true;
-
-                    return matchesSearch && matchesEnvironment && matchesCompliance;
-                });
-
-                renderKeys(filteredKeys);
-                updateStats(keys.length, filteredKeys.length);
-            }
-
-            searchInput.addEventListener('input', filterKeys);
-            environmentFilter.addEventListener('change', filterKeys);
-            complianceFilter.addEventListener('change', filterKeys);
-        });
-        
-        // Modal and Delete Functionality
-        let currentDeleteKey = null;
-        
-        function showDeleteModal(keyId, keyAlias) {
-            currentDeleteKey = { id: keyId, alias: keyAlias };
-            document.getElementById('deleteKeyId').textContent = keyId;
-            document.getElementById('deleteKeyAlias').textContent = keyAlias;
-            document.getElementById('deleteKeyFile').textContent = `inventory/${keyId}.yaml`;
-            document.getElementById('deleteModal').style.display = 'block';
         }
-        
-        function hideDeleteModal() {
-            document.getElementById('deleteModal').style.display = 'none';
-            currentDeleteKey = null;
-            document.getElementById('deleteReason').value = '';
-            document.getElementById('deleteSteps').style.display = 'none';
-        }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('deleteModal');
-            if (event.target === modal) {
-                hideDeleteModal();
-            }
-        }
-        
-        function generateDeleteSteps() {
-            const reason = document.getElementById('deleteReason').value.trim();
+
+        // Populate filter dropdowns
+        function populateFilters(keys) {
+            const environments = [...new Set(keys.map(key => key.environment))].sort();
+            const complianceTypes = [...new Set(keys.map(key => key.compliance.nist_classification))].sort();
             
-            if (!reason) {
-                alert('Please provide a reason for deletion');
+            environments.forEach(env => {
+                const option = document.createElement('option');
+                option.value = env;
+                option.textContent = env.charAt(0).toUpperCase() + env.slice(1);
+                environmentFilter.appendChild(option);
+            });
+            
+            complianceTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                complianceFilter.appendChild(option);
+            });
+        }
+
+        // Update dashboard statistics
+        function updateDashboard(keys) {
+            const totalKeys = keys.length;
+            const activeKeys = keys.filter(key => getKeyStatus(key) === 'active').length;
+            const rotationKeys = keys.filter(key => {
+                const rotation = getRotationStatus(key.created_at, key.rotation_interval_days);
+                return rotation.status === 'warning' || rotation.status === 'overdue';
+            }).length;
+            
+            // Update stats
+            document.getElementById('total-keys-stat').textContent = totalKeys;
+            document.getElementById('active-keys-stat').textContent = activeKeys;
+            document.getElementById('active-keys-percentage').textContent = 
+                totalKeys > 0 ? `${((activeKeys / totalKeys) * 100).toFixed(1)}% of total` : '0% of total';
+            document.getElementById('rotation-keys-stat').textContent = rotationKeys;
+            
+            const complianceScore = 94; // Mock compliance score
+            document.getElementById('compliance-score-stat').textContent = `${complianceScore}%`;
+            document.getElementById('compliance-progress').style.width = `${complianceScore}%`;
+
+            // Update environment distribution
+            updateEnvironmentDistribution(keys);
+            
+            // Update recent activities
+            updateRecentActivities();
+            
+            // Update upcoming rotations
+            updateUpcomingRotations(keys);
+        }
+
+        // Update environment distribution
+        function updateEnvironmentDistribution(keys) {
+            const envCounts = {};
+            keys.forEach(key => {
+                envCounts[key.environment] = (envCounts[key.environment] || 0) + 1;
+            });
+
+            const total = keys.length;
+            const container = document.getElementById('environment-distribution');
+            container.innerHTML = '';
+
+            Object.entries(envCounts).forEach(([env, count]) => {
+                const percentage = total > 0 ? (count / total * 100) : 0;
+                const color = env === 'prod' ? 'rgb(var(--destructive))' : 
+                              env === 'staging' ? 'rgb(var(--warning))' : 'rgb(var(--success))';
+                
+                const item = document.createElement('div');
+                item.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 0.75rem; height: 0.75rem; background: ${color}; border-radius: 50%;"></div>
+                            <span class="text-sm">${env.charAt(0).toUpperCase() + env.slice(1)}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium">${count} keys</span>
+                            <span class="badge ${env === 'prod' ? 'badge-destructive' : env === 'staging' ? 'badge-warning' : 'badge-success'}">${env.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: ${percentage}%; background: ${color};"></div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Update recent activities (mock data)
+        function updateRecentActivities() {
+            const activities = [
+                { action: 'Key Rotated', key: 'payment-service-jwt-prod', user: 'john.doe', time: '2 hours ago', status: 'success' },
+                { action: 'Key Created', key: 'auth-service-rsa-staging', user: 'jane.smith', time: '4 hours ago', status: 'success' },
+                { action: 'Emergency Replacement', key: 'api-gateway-hmac-prod', user: 'security-team', time: '6 hours ago', status: 'error' },
+                { action: 'Compliance Scan', key: 'database-encryption-prod', user: 'system', time: '8 hours ago', status: 'warning' },
+                { action: 'Key Approved', key: 'webhook-signing-dev', user: 'admin.user', time: '1 day ago', status: 'success' }
+            ];
+
+            const container = document.getElementById('recent-activities');
+            container.innerHTML = '';
+
+            activities.forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.innerHTML = `
+                    <div class="activity-indicator ${activity.status}"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.action}</div>
+                        <div class="activity-description">${activity.key}</div>
+                    </div>
+                    <div class="activity-meta">
+                        <div>${activity.user}</div>
+                        <div>${activity.time}</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Update upcoming rotations
+        function updateUpcomingRotations(keys) {
+            const upcomingRotations = keys
+                .map(key => {
+                    const rotation = getRotationStatus(key.created_at, key.rotation_interval_days);
+                    return {
+                        ...key,
+                        daysLeft: Math.max(0, key.rotation_interval_days - Math.floor((new Date() - new Date(key.created_at)) / (1000 * 60 * 60 * 24))),
+                        priority: rotation.status === 'overdue' ? 'high' : rotation.status === 'warning' ? 'medium' : 'low'
+                    };
+                })
+                .filter(key => key.daysLeft <= 30)
+                .sort((a, b) => a.daysLeft - b.daysLeft)
+                .slice(0, 5);
+
+            const container = document.getElementById('upcoming-rotations');
+            container.innerHTML = '';
+
+            if (upcomingRotations.length === 0) {
+                container.innerHTML = '<div class="text-center text-sm" style="color: rgb(var(--muted-foreground)); padding: 2rem;">No upcoming rotations in the next 30 days</div>';
+                return;
+            }
+
+            upcomingRotations.forEach(rotation => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="badge ${rotation.priority === 'high' ? 'badge-destructive' : rotation.priority === 'medium' ? 'badge-warning' : 'badge-default'}">${rotation.priority}</span>
+                        <div>
+                            <div class="activity-title">${rotation.alias}</div>
+                            <div class="activity-description">${rotation.environment}</div>
+                        </div>
+                    </div>
+                    <div class="activity-meta">
+                        <div class="font-medium">${rotation.daysLeft} days</div>
+                        <div>${new Date(Date.now() + rotation.daysLeft * 24 * 60 * 60 * 1000).toLocaleDateString()}</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Get key status
+        function getKeyStatus(key) {
+            const rotation = getRotationStatus(key.created_at, key.rotation_interval_days);
+            return rotation.status === 'overdue' || rotation.status === 'warning' ? 'needs-rotation' : 'active';
+        }
+
+        // Get rotation status
+        function getRotationStatus(createdAt, rotationDays) {
+            const created = new Date(createdAt);
+            const now = new Date();
+            const daysSinceCreation = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+            const daysUntilRotation = rotationDays - daysSinceCreation;
+            
+            if (daysUntilRotation <= 0) {
+                return { status: 'overdue', message: `${Math.abs(daysUntilRotation)} days overdue`, class: 'rotation-warning' };
+            } else if (daysUntilRotation <= 30) {
+                return { status: 'warning', message: `${daysUntilRotation} days remaining`, class: 'rotation-warning' };
+            } else {
+                return { status: 'ok', message: `${daysUntilRotation} days remaining`, class: 'rotation-ok' };
+            }
+        }
+
+        // Render keys in the grid
+        function renderKeys(keysToRender) {
+            if (keysToRender.length === 0) {
+                keysContainer.innerHTML = '<div class="empty-state"><h3>No keys found</h3><p>Try adjusting your search criteria.</p></div>';
                 return;
             }
             
-            const keyId = currentDeleteKey.id;
-            const keyAlias = currentDeleteKey.alias;
-            const branchName = `delete-key-${keyId}`;
-            const fileName = `inventory/${keyId}.yaml`;
-            
-            // Generate URLs and text content
-            const owner = 'rhigonet';
-            const repo = 'key-inventory';
-            
-            // Step 1: Create branch via GitHub's new file interface
-            const createBranchUrl = `https://github.com/${owner}/${repo}/new/main?filename=DELETE_${keyId}.md&value=${encodeURIComponent('This file is temporary. Delete it after creating the branch.')}`;
-            document.getElementById('createBranchLink').href = createBranchUrl;
-            document.getElementById('branchName').textContent = branchName;
-            
-            // Step 2: Delete file (first navigate to the branch, then to the file)
-            const deleteFileUrl = `https://github.com/${owner}/${repo}/blob/${branchName}/${fileName}`;
-            document.getElementById('deleteFileLink').href = deleteFileUrl;
-            const commitMessage = `feat: remove key ${keyAlias} (${keyId})\n\nReason: ${reason}`;
-            document.getElementById('commitMessage').textContent = commitMessage;
-            
-            // Step 3: Create PR
-            const createPRUrl = `https://github.com/${owner}/${repo}/compare/main...${branchName}?quick_pull=1`;
-            document.getElementById('createPRLink').href = createPRUrl;
-            const prTitle = `feat: remove cryptographic key ${keyAlias}`;
-            document.getElementById('prTitle').textContent = prTitle;
-            
-            const prDescription = `## Key Deletion Request\n\n**Key ID:** \`${keyId}\`\n**Alias:** \`${keyAlias}\`\n**File:** \`${fileName}\`\n\n**Reason for deletion:**\n${reason}\n\n---\n\n⚠️ **Important:** This PR will permanently remove the cryptographic key from the inventory. Please review carefully before merging.\n\n**Review Checklist:**\n- [ ] Confirm the key is no longer in use\n- [ ] Verify proper key retirement procedures were followed\n- [ ] Ensure compliance requirements are met\n- [ ] Document the deletion in security logs\n\n*This PR was created via the Key Inventory Management interface.*`;
-            document.getElementById('prDescription').textContent = prDescription;
-            
-            // Show the steps
-            document.getElementById('deleteSteps').style.display = 'block';
-        }
-        
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                // Visual feedback
-                const button = element.nextElementSibling;
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                button.style.background = '#16a34a';
+            keysContainer.innerHTML = '';
+            keysToRender.forEach(key => {
+                const rotationStatus = getRotationStatus(key.created_at, key.rotation_interval_days);
+                const status = getKeyStatus(key);
                 
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '';
-                }, 2000);
-            }).catch(err => {
-                alert('Failed to copy to clipboard');
+                const keyCard = document.createElement('div');
+                keyCard.className = 'key-card';
+                keyCard.innerHTML = `
+                    <div class="key-header">
+                        <div>
+                            <div class="key-alias">${key.alias}</div>
+                            <div class="key-id">${key.key_id}</div>
+                        </div>
+                        <span class="badge ${key.environment === 'prod' ? 'badge-destructive' : key.environment === 'staging' ? 'badge-warning' : 'badge-success'}">${key.environment}</span>
+                    </div>
+                    
+                    <div class="key-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Owner:</span>
+                            <span class="detail-value">${key.owner}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Purpose:</span>
+                            <span class="detail-value">${key.purpose}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Created:</span>
+                            <span class="detail-value">${new Date(key.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Rotation:</span>
+                            <span class="detail-value ${rotationStatus.class}">${rotationStatus.message}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Location:</span>
+                            <span class="detail-value" style="font-family: 'Monaco', monospace; font-size: 0.75rem; word-break: break-all;">${key.location}</span>
+                        </div>
+                        
+                        <div class="compliance-grid">
+                            <div class="compliance-item">
+                                <div>PCI: ${key.compliance.pci_scope}</div>
+                            </div>
+                            <div class="compliance-item">
+                                <div>NIST: ${key.compliance.nist_classification}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tags">
+                            ${key.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="key-actions">
+                        <button class="btn btn-destructive btn-sm" onclick="showDeleteModal('${key.key_id}', '${key.alias}')">
+                            🗑️ Delete
+                        </button>
+                        <a href="https://github.com/rhigonet/key-inventory/blob/main/inventory/${key.key_id}.yaml" target="_blank" class="btn btn-secondary btn-sm">
+                            📝 View YAML
+                        </a>
+                    </div>
+                `;
+                keysContainer.appendChild(keyCard);
             });
         }
+
+        // Update statistics
+        function updateStats(keys) {
+            const total = keys.length;
+            totalKeysElement.textContent = total;
+            visibleKeysElement.textContent = total;
+        }
+
+        // Filter keys
+        function filterKeys() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedEnvironment = environmentFilter.value;
+            const selectedCompliance = complianceFilter.value;
+
+            const filteredKeys = keys.filter(key => {
+                const matchesSearch = 
+                    key.alias.toLowerCase().includes(searchTerm) ||
+                    key.owner.toLowerCase().includes(searchTerm) ||
+                    key.purpose.toLowerCase().includes(searchTerm) ||
+                    key.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                
+                const matchesEnvironment = selectedEnvironment ? key.environment === selectedEnvironment : true;
+                const matchesCompliance = selectedCompliance ? key.compliance.nist_classification === selectedCompliance : true;
+
+                return matchesSearch && matchesEnvironment && matchesCompliance;
+            });
+
+            renderKeys(filteredKeys);
+            visibleKeysElement.textContent = filteredKeys.length;
+        }
+
+        // Display build info
+        function displayBuildInfo(metadata) {
+            const header = document.querySelector('.header-title');
+            if (metadata && header) {
+                const buildInfo = document.createElement('div');
+                buildInfo.style.fontSize = '0.75rem';
+                buildInfo.style.color = 'rgb(var(--muted-foreground))';
+                buildInfo.style.marginTop = '0.25rem';
+                
+                let infoText = `Built: ${new Date(metadata.build_timestamp).toLocaleString()}`;
+                if (metadata.schema_version) {
+                    infoText += ` | Schema: v${metadata.schema_version}`;
+                }
+                if (metadata.statistics && metadata.statistics.schema_usage) {
+                    const enhanced = metadata.statistics.schema_usage.enhanced_schema_v2 || 0;
+                    const legacy = metadata.statistics.schema_usage.legacy_schema_v1 || 0;
+                    infoText += ` | Enhanced: ${enhanced}, Legacy: ${legacy}`;
+                }
+                
+                buildInfo.textContent = infoText;
+                header.appendChild(buildInfo);
+            }
+        }
+
+        // Placeholder for delete modal functionality
+        function showDeleteModal(keyId, keyAlias) {
+            alert(`Delete functionality for key ${keyAlias} (${keyId}) would be implemented here.`);
+        }
+
+        // Event listeners
+        if (searchInput) searchInput.addEventListener('input', filterKeys);
+        if (environmentFilter) environmentFilter.addEventListener('change', filterKeys);
+        if (complianceFilter) complianceFilter.addEventListener('change', filterKeys);
     </script>
 </body>
 </html>
