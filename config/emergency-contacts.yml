@@ -1,0 +1,123 @@
+# Emergency Contacts Configuration
+# This file defines emergency contacts for key inventory incidents
+
+emergency_contacts:
+  primary:
+    security_team:
+      email: security-team@company.com
+      slack: "#security-alerts"
+      pagerduty: "security-team-escalation"
+      phone: "+1-555-SECURITY"
+    
+    key_inventory_admins:
+      email: key-admins@company.com
+      slack: "#key-inventory-admins"
+      pagerduty: "key-admin-escalation"
+      phone: "+1-555-KEY-ADMIN"
+  
+  secondary:
+    infrastructure_team:
+      email: infra-team@company.com
+      slack: "#infrastructure"
+      pagerduty: "infra-escalation"
+    
+    compliance_team:
+      email: compliance@company.com
+      slack: "#compliance"
+      pagerduty: "compliance-escalation"
+  
+  vendors:
+    aws_support:
+      phone: "+1-206-266-4064"
+      case_url: "https://console.aws.amazon.com/support/"
+    
+    azure_support:
+      phone: "+1-800-642-7676"
+      case_url: "https://portal.azure.com/#blade/Microsoft_Azure_Support/HelpAndSupportBlade"
+    
+    hashicorp_support:
+      email: "support@hashicorp.com"
+      case_url: "https://support.hashicorp.com/"
+
+# Escalation procedures
+escalation_procedures:
+  severity_levels:
+    low:
+      response_time: "4 hours"
+      escalation_after: "8 hours"
+      contacts: ["key_inventory_admins"]
+    
+    medium:
+      response_time: "2 hours"
+      escalation_after: "4 hours"
+      contacts: ["key_inventory_admins", "security_team"]
+    
+    high:
+      response_time: "1 hour"
+      escalation_after: "2 hours"
+      contacts: ["security_team", "key_inventory_admins", "infrastructure_team"]
+    
+    critical:
+      response_time: "15 minutes"
+      escalation_after: "30 minutes"
+      contacts: ["security_team", "key_inventory_admins", "infrastructure_team", "compliance_team"]
+
+# Notification preferences
+notification_preferences:
+  email:
+    enabled: true
+    group_notifications: true
+    max_frequency: "immediate"
+  
+  slack:
+    enabled: true
+    channels:
+      - "#security-alerts"
+      - "#key-inventory-admins"
+    mention_on_critical: true
+  
+  pagerduty:
+    enabled: true
+    service_ids:
+      security_team: "P123456"
+      key_admins: "P789012"
+    escalation_policies:
+      critical: "immediate"
+      high: "5_minutes"
+  
+  sms:
+    enabled: true
+    critical_only: true
+    rate_limit: "5_per_hour"
+
+# Emergency procedures documentation
+procedures:
+  key_compromise:
+    documentation_url: "https://wiki.company.com/security/key-compromise"
+    runbook_url: "https://runbooks.company.com/key-compromise"
+    checklist:
+      - "Validate compromise report"
+      - "Trigger emergency replacement workflow"
+      - "Notify affected services"
+      - "Document incident"
+      - "Conduct post-incident review"
+  
+  key_store_outage:
+    documentation_url: "https://wiki.company.com/infrastructure/key-store-outage"
+    runbook_url: "https://runbooks.company.com/key-store-outage"
+    checklist:
+      - "Verify outage scope"
+      - "Activate backup systems"
+      - "Notify stakeholders"
+      - "Monitor recovery"
+      - "Update status page"
+  
+  compliance_violation:
+    documentation_url: "https://wiki.company.com/compliance/violation-response"
+    runbook_url: "https://runbooks.company.com/compliance-violation"
+    checklist:
+      - "Assess violation scope"
+      - "Notify compliance team"
+      - "Implement corrective measures"
+      - "Document remediation"
+      - "Report to regulators if required"

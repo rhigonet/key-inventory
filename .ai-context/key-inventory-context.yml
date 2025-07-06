@@ -1,0 +1,290 @@
+# AI Agent Context for Key Inventory Management System
+# This file provides comprehensive context for AI agents working with this GitOps-based key lifecycle management system
+
+system_description: |
+  This is a GitOps-based key lifecycle management system for cryptographic keys, 
+  API keys, and secrets. The system uses GitHub as the central platform for 
+  version control, approvals, automation, and documentation.
+
+core_principles:
+  - Everything as Code: All operations are defined as code for AI agent compatibility
+  - GitOps Workflow: Git serves as the single source of truth
+  - Immutable Audit Trail: All changes are tracked and auditable
+  - Principle of Least Privilege: Role-based access control
+  - Automated Compliance: Built-in compliance checks and reporting
+
+architecture:
+  description: |
+    The system is built around GitHub repository with automated workflows,
+    YAML-based key definitions, and comprehensive lifecycle management.
+  
+  components:
+    inventory: "YAML files defining cryptographic keys (one per key)"
+    workflows: "GitHub Actions workflows for automation"
+    scripts: "Python scripts for key management operations"
+    docs: "Generated documentation and web interface"
+    monitoring: "Monitoring and alerting configurations"
+    config: "System configuration files"
+
+file_structure:
+  inventory/: "YAML files defining cryptographic keys (one per key)"
+  .github/workflows/: "GitHub Actions workflows for automation"
+  docs/: "Generated documentation and web interface"
+  scripts/: "Python scripts for key management operations"
+  monitoring/: "Monitoring and alerting configurations"
+  config/: "System configuration files"
+  .ai-context/: "Context files for AI agents"
+
+key_concepts:
+  GitOps_workflow: "GitHub as single source of truth with PR-based changes"
+  YAML_based_inventory: "Each key defined in separate YAML file in inventory/ directory"
+  automated_workflows: "GitHub Actions for key lifecycle operations"
+  role_based_access: "RBAC with key-inventory-admins, security-team, developers, key-owners"
+  comprehensive_audit: "Complete audit trail via Git history and workflow logs"
+
+common_operations:
+  create_key:
+    description: "Create new YAML file in inventory/, submit PR for approval"
+    workflow: ".github/workflows/key-creation.yml"
+    approval_required: "key-inventory-admins"
+    validation: "Schema, duplicates, compliance checks"
+  
+  delete_key:
+    description: "Remove YAML file from inventory/, submit PR for approval"
+    workflow: ".github/workflows/key-deletion.yml"
+    approval_required: "key-inventory-admins"
+    validation: "Dependencies, compliance checks"
+  
+  rotate_key:
+    description: "Automated rotation based on rotation_interval_days"
+    workflow: ".github/workflows/key-rotation.yml"
+    trigger: "Scheduled (daily) or manual"
+    automation: "Fully automated with notifications"
+  
+  emergency_replace:
+    description: "Manual workflow for compromised keys"
+    workflow: ".github/workflows/emergency-key-replacement.yml"
+    approval_required: "security-team"
+    urgency: "Immediate execution for security incidents"
+
+workflows:
+  key_creation: 
+    file: ".github/workflows/key-creation.yml"
+    trigger: "Pull request on inventory/*.yaml"
+    steps: ["validate", "check-duplicates", "compliance-check", "provision"]
+    approval: "key-inventory-admins (2 reviewers)"
+  
+  key_deletion:
+    file: ".github/workflows/key-deletion.yml"
+    trigger: "Pull request deleting inventory/*.yaml OR manual dispatch"
+    steps: ["validate-deletion", "check-dependencies", "revoke", "audit"]
+    approval: "key-inventory-admins"
+  
+  key_rotation:
+    file: ".github/workflows/key-rotation.yml"
+    trigger: "Schedule (daily 2 AM UTC) OR manual dispatch"
+    steps: ["check-due", "rotate", "verify", "update-inventory"]
+    automation: "Fully automated"
+  
+  emergency_replacement:
+    file: ".github/workflows/emergency-key-replacement.yml"
+    trigger: "Manual dispatch only"
+    steps: ["validate-emergency", "revoke", "generate-new", "track-incident"]
+    approval: "security-team"
+
+validation_rules:
+  required_fields: 
+    - key_id
+    - alias
+    - environment
+    - owner
+    - purpose
+    - created_at
+    - rotation_interval_days
+    - location
+    - compliance
+    - tags
+  
+  key_id_format: "UUID v4"
+  environment_values: ["dev", "staging", "stage", "prod", "production"]
+  compliance_pci_scope: ["none", "cardholder-data", "out-of-scope"]
+  compliance_nist_classification: ["internal", "confidential", "secret", "top-secret"]
+  
+  optional_enhanced_fields:
+    - lifecycle
+    - technical
+    - relationships
+    - operational
+    - audit
+    - metadata
+    - custom_fields
+
+schema_versions:
+  current: "2.0"
+  supported: ["1.0", "2.0"]
+  migration: "Enhanced schema adds lifecycle, technical, and operational metadata"
+
+approval_matrix:
+  key_creation: "Requires key-inventory-admin approval (2 reviewers)"
+  key_deletion: "Requires key-inventory-admin approval"
+  key_rotation: "Automated (no manual approval for scheduled)"
+  emergency_operations: "Requires security-team approval"
+  workflow_changes: "Requires security-team and key-inventory-admin approval"
+
+compliance_frameworks:
+  PCI_DSS:
+    applicable_when: "pci_scope != 'none'"
+    requirements: ["strong_cryptography", "access_logging", "key_rotation"]
+    validation: "Automated compliance checks in workflows"
+  
+  SOX:
+    applicable_when: "sox_applicable: true"
+    requirements: ["segregation_of_duties", "audit_trails", "change_approval"]
+    validation: "Creator != Approver, audit logging enabled"
+  
+  GDPR:
+    applicable_when: "gdpr_applicable: true"
+    requirements: ["data_protection", "retention_periods", "access_controls"]
+    validation: "Retention period specified, encryption requirements"
+  
+  NIST:
+    applicable_when: "Always (based on nist_classification)"
+    requirements: ["asset_identification", "monitoring", "emergency_response"]
+    validation: "Classification-based rotation and protection requirements"
+
+key_stores_supported:
+  aws_kms:
+    location_format: "aws-kms://arn:aws:kms:region:account:key/key-id"
+    authentication: "IAM roles/credentials"
+    features: ["rotation", "backup", "cross-region"]
+  
+  azure_kv:
+    location_format: "azure-kv://vault-name.vault.azure.net/keys/key-name"
+    authentication: "Managed Identity/Service Principal"
+    features: ["rotation", "backup", "geo-redundancy"]
+  
+  hashicorp_vault:
+    location_format: "vault://vault-server/secret/path"
+    authentication: "Vault tokens/AppRole"
+    features: ["rotation", "dynamic_secrets", "audit_logs"]
+  
+  custom:
+    location_format: "custom://provider/identifier"
+    authentication: "Provider-specific"
+    features: "Varies by provider"
+
+monitoring_and_alerting:
+  rotation_monitoring: "Daily checks for keys due for rotation"
+  compliance_monitoring: "Continuous compliance status tracking"
+  security_monitoring: "Emergency replacement tracking"
+  health_monitoring: "Key store availability and performance"
+  
+  alert_channels:
+    - slack
+    - email
+    - pagerduty
+    - sms (emergency only)
+
+emergency_procedures:
+  key_compromise:
+    detection: ["security_alerts", "unusual_access", "manual_report"]
+    response: ["immediate_revocation", "replacement_generation", "incident_tracking"]
+    timeline: "0-60 minutes for complete replacement"
+  
+  key_store_outage:
+    detection: ["health_monitoring", "application_errors"]
+    response: ["failover_to_backup", "service_degradation_alerts"]
+    timeline: "0-30 minutes for failover"
+
+ai_agent_capabilities:
+  read_operations:
+    - "Read and understand key inventory structure"
+    - "Analyze compliance status and requirements"
+    - "Review audit trails and change history"
+    - "Generate reports and summaries"
+  
+  write_operations:
+    - "Create new key definitions (via PR)"
+    - "Update existing key metadata (via PR)"
+    - "Trigger workflows for lifecycle operations"
+    - "Generate documentation and procedures"
+  
+  analysis_operations:
+    - "Compliance gap analysis"
+    - "Security risk assessment"
+    - "Rotation optimization recommendations"
+    - "Cost and operational analysis"
+
+common_ai_tasks:
+  create_new_key:
+    steps:
+      - "Gather requirements (purpose, environment, compliance)"
+      - "Generate UUID for key_id"
+      - "Create YAML file with enhanced schema"
+      - "Validate against schema and policies"
+      - "Create PR with approval checklist"
+    
+    example_prompt: |
+      "I need a new JWT signing key for the payment service in production.
+      It needs to be PCI compliant and rotate every 90 days."
+  
+  analyze_compliance:
+    steps:
+      - "Load all inventory files"
+      - "Check each key against compliance frameworks"
+      - "Generate compliance report"
+      - "Identify gaps and recommendations"
+    
+    example_prompt: |
+      "Generate a compliance report for all production keys,
+      focusing on PCI DSS requirements."
+  
+  emergency_response:
+    steps:
+      - "Assess incident severity and scope"
+      - "Identify affected keys and services"
+      - "Trigger emergency replacement workflow"
+      - "Monitor replacement progress"
+      - "Generate incident report"
+    
+    example_prompt: |
+      "The payment-service-jwt-prod key may be compromised.
+      Initiate emergency replacement procedure."
+
+best_practices_for_ai_agents:
+  - "Always validate YAML syntax and schema compliance"
+  - "Follow GitOps principles - all changes via PR"
+  - "Respect approval requirements and RBAC"
+  - "Generate comprehensive documentation"
+  - "Include security and compliance considerations"
+  - "Provide clear audit trails for all actions"
+  - "Test in non-production environments first"
+  - "Follow incident response procedures for emergencies"
+
+error_handling:
+  validation_errors: "Return detailed error messages with remediation steps"
+  workflow_failures: "Check GitHub Actions logs and retry with fixes"
+  compliance_violations: "Block operations and require manual review"
+  emergency_situations: "Escalate to security team immediately"
+
+integration_points:
+  github_api: "For repository operations and workflow management"
+  key_stores: "For actual key provisioning and management"
+  monitoring_systems: "For health checks and alerting"
+  notification_services: "For stakeholder communication"
+  compliance_tools: "For automated compliance reporting"
+
+security_considerations:
+  - "Never log or expose actual key material"
+  - "Validate all inputs against injection attacks"
+  - "Use secure communication channels only"
+  - "Respect least privilege access principles"
+  - "Maintain audit logs for all operations"
+  - "Encrypt sensitive data in transit and at rest"
+
+performance_optimization:
+  - "Cache frequently accessed data"
+  - "Batch operations where possible"
+  - "Use efficient Git operations"
+  - "Optimize workflow execution time"
+  - "Monitor resource usage and costs"

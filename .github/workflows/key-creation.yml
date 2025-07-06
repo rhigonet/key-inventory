@@ -1,0 +1,179 @@
+name: Key Creation Workflow
+
+on:
+  pull_request:
+    paths:
+      - 'inventory/*.yaml'
+      - 'inventory/*.yml'
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  validate-key-creation:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema requests boto3 azure-identity azure-keyvault-keys
+      
+      - name: Detect changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            inventory/*.yaml
+            inventory/*.yml
+      
+      - name: Validate new keys
+        run: |
+          python scripts/validate-key-creation.py ${{ steps.changed-files.outputs.all_changed_files }}
+      
+      - name: Check for duplicates
+        run: |
+          python scripts/check-duplicates.py ${{ steps.changed-files.outputs.all_changed_files }}
+      
+      - name: Compliance check
+        run: |
+          python scripts/compliance-check.py ${{ steps.changed-files.outputs.all_changed_files }}
+      
+      - name: Security scan
+        run: |
+          python scripts/security-scan.py ${{ steps.changed-files.outputs.all_changed_files }}
+      
+      - name: Generate approval checklist
+        run: |
+          python scripts/generate-approval-checklist.py ${{ steps.changed-files.outputs.all_changed_files }}
+      
+      - name: Add validation results to PR
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = '';
+            
+            // Check for validation errors
+            if (fs.existsSync('validation-errors.txt')) {
+              comment += '## ❌ Key Creation Validation Failed\n\n';
+              comment += '### Validation Errors:\n';
+              comment += '```\n' + fs.readFileSync('validation-errors.txt', 'utf8') + '\n```\n\n';
+            }
+            
+            // Add compliance results
+            if (fs.existsSync('compliance-results.txt')) {
+              comment += '### Compliance Check Results:\n';
+              comment += fs.readFileSync('compliance-results.txt', 'utf8') + '\n\n';
+            }
+            
+            // Add security scan results
+            if (fs.existsSync('security-scan-results.txt')) {
+              comment += '### Security Scan Results:\n';
+              comment += fs.readFileSync('security-scan-results.txt', 'utf8') + '\n\n';
+            }
+            
+            // Add approval checklist
+            if (fs.existsSync('approval-checklist.md')) {
+              comment += fs.readFileSync('approval-checklist.md', 'utf8');
+            }
+            
+            if (comment) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+
+  provision-key:
+    runs-on: ubuntu-latest
+    needs: validate-key-creation
+    if: github.event.pull_request.merged == true
+    environment: key-provisioning
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml boto3 azure-identity azure-keyvault-keys hvac
+      
+      - name: Setup cloud credentials
+        run: |
+          echo "Setting up cloud credentials based on key store type"
+          # AWS credentials are set via environment variables or IAM roles
+          # Azure credentials are set via environment variables or managed identity
+          # Vault credentials are set via environment variables
+      
+      - name: Detect newly added keys
+        id: added-keys
+        run: |
+          # Get the list of files that were added in the merged PR
+          git diff --name-only --diff-filter=A HEAD~1 HEAD | grep -E 'inventory/.*\.ya?ml$' > added_keys.txt || true
+          echo "Added keys:"
+          cat added_keys.txt
+      
+      - name: Provision keys in target stores
+        run: |
+          if [ -s added_keys.txt ]; then
+            python scripts/provision-key.py --files-from added_keys.txt
+          else
+            echo "No new keys to provision"
+          fi
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+      
+      - name: Update key metadata
+        run: |
+          if [ -s added_keys.txt ]; then
+            python scripts/update-key-metadata.py --status=provisioned --files-from added_keys.txt
+          fi
+      
+      - name: Send notification
+        run: |
+          python scripts/send-notification.py --type=key-created --pr-number=${{ github.event.pull_request.number }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          EMAIL_CONFIG: ${{ secrets.EMAIL_CONFIG }}
+      
+      - name: Update documentation
+        run: |
+          python build-data.py --include-metadata
+          
+          # Commit and push the updated documentation
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/keys.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "docs: update key inventory after provisioning [skip ci]"
+            git push
+          fi

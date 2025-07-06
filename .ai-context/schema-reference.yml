@@ -1,0 +1,438 @@
+# Enhanced Key Schema Reference v2.0
+# This file provides a comprehensive reference for AI agents working with key definitions
+
+schema_version: "2.0"
+backward_compatibility: ["1.0"]
+
+# Complete field reference with types, constraints, and examples
+field_reference:
+  
+  # === REQUIRED FIELDS ===
+  key_id:
+    type: string
+    format: UUID v4
+    description: "Unique identifier for the cryptographic key"
+    constraints:
+      - "Must be a valid UUID v4 format"
+      - "Must be unique across all keys in inventory"
+      - "Filename must match: {key_id}.yaml"
+    example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+    validation_regex: "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+  
+  alias:
+    type: string
+    format: alphanumeric-dash-underscore
+    description: "Human-readable name for the key"
+    constraints:
+      - "Only alphanumeric characters, dashes, and underscores"
+      - "Should be descriptive and follow naming conventions"
+      - "Recommended to be unique (warning if duplicate)"
+    example: "payment-service-jwt-prod"
+    validation_regex: "^[a-zA-Z0-9\\-_]+$"
+  
+  environment:
+    type: string
+    enum: ["dev", "staging", "stage", "prod", "production"]
+    description: "Deployment environment for the key"
+    constraints:
+      - "Must be one of the allowed values"
+      - "Affects security and compliance requirements"
+    example: "prod"
+  
+  owner:
+    type: string
+    format: email
+    description: "Email address of the key owner/responsible team"
+    constraints:
+      - "Must be a valid email address"
+      - "Should be a team email address preferred"
+    example: "payments-team@company.com"
+    validation_regex: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+  
+  purpose:
+    type: string
+    description: "Clear description of what this key is used for"
+    constraints:
+      - "Must be descriptive and specific"
+      - "Required for compliance and audit purposes"
+    example: "JWT signing for payment service authentication"
+  
+  created_at:
+    type: string
+    format: ISO 8601 datetime
+    description: "When the key was originally created"
+    constraints:
+      - "Must be valid ISO 8601 format"
+      - "Should include timezone information"
+    example: "2024-01-20T14:30:00Z"
+  
+  rotation_interval_days:
+    type: integer
+    description: "How often the key should be rotated (in days)"
+    constraints:
+      - "Must be between 1 and 3650 days"
+      - "Should align with compliance requirements"
+    example: 90
+    min: 1
+    max: 3650
+  
+  location:
+    type: string
+    format: URI
+    description: "Location/identifier for the key in the key store"
+    constraints:
+      - "Must be a valid URI for the key store"
+      - "Format depends on key store type"
+    examples:
+      aws_kms: "aws-kms://arn:aws:kms:us-east-1:123456789012:key/a1b2c3d4-e5f6-7890-1234-567890abcdef"
+      azure_kv: "azure-kv://my-vault.vault.azure.net/keys/my-key/version"
+      vault: "vault://vault.company.com/secret/keys/my-key"
+  
+  compliance:
+    type: object
+    description: "Compliance framework requirements"
+    required_fields:
+      - pci_scope
+      - nist_classification
+    fields:
+      pci_scope:
+        type: string
+        enum: ["none", "cardholder-data", "out-of-scope"]
+        description: "PCI DSS scope classification"
+      nist_classification:
+        type: string
+        enum: ["internal", "confidential", "secret", "top-secret"]
+        description: "NIST data classification level"
+      sox_applicable:
+        type: boolean
+        description: "Whether key is subject to SOX requirements"
+        default: false
+      gdpr_applicable:
+        type: boolean
+        description: "Whether key processes personal data under GDPR"
+        default: false
+      retention_period_days:
+        type: integer
+        description: "Data retention period for compliance"
+        min: 1
+        max: 10950  # 30 years
+  
+  tags:
+    type: array
+    items: string
+    description: "Tags for categorization and search"
+    constraints:
+      - "Each tag must be alphanumeric with dashes/underscores"
+      - "No duplicate tags allowed"
+      - "Recommended for operational categorization"
+    example: ["jwt", "payments", "pci", "production", "high-risk"]
+
+  # === OPTIONAL ENHANCED FIELDS ===
+  
+  lifecycle:
+    type: object
+    description: "Key lifecycle metadata"
+    fields:
+      status:
+        type: string
+        enum: ["active", "deprecated", "revoked", "emergency-replaced"]
+        description: "Current status of the key"
+        default: "active"
+      created_by:
+        type: string
+        description: "GitHub username who created the key"
+        validation_regex: "^[a-zA-Z0-9\\-_.]+$"
+      approved_by:
+        type: string
+        description: "GitHub username who approved the key"
+        validation_regex: "^[a-zA-Z0-9\\-_.]+$"
+      approved_at:
+        type: string
+        format: ISO 8601 datetime
+        description: "When the key was approved"
+      last_rotated_at:
+        type: string
+        format: ISO 8601 datetime
+        description: "When the key was last rotated"
+      next_rotation_due:
+        type: string
+        format: ISO 8601 datetime
+        description: "When the next rotation is due"
+      rotation_count:
+        type: integer
+        description: "Number of times the key has been rotated"
+        min: 0
+      emergency_contact:
+        type: string
+        format: email
+        description: "Emergency contact for key-related incidents"
+  
+  technical:
+    type: object
+    description: "Technical specifications of the key"
+    fields:
+      key_type:
+        type: string
+        enum: ["rsa", "ec", "symmetric", "api-key", "jwt"]
+        description: "Type of cryptographic key"
+      key_size:
+        type: integer
+        description: "Key size in bits (for applicable key types)"
+        constraints:
+          - "RSA: minimum 2048 bits"
+          - "EC: 256, 384, or 521 bits"
+      algorithm:
+        type: string
+        description: "Cryptographic algorithm used"
+        examples: ["RS256", "ES256", "AES-256-GCM"]
+      encoding:
+        type: string
+        description: "Key encoding format"
+        examples: ["pkcs8", "pkcs1", "raw", "base64"]
+      key_store_type:
+        type: string
+        enum: ["aws-kms", "azure-kv", "hashicorp-vault", "custom"]
+        description: "Type of key store/management system"
+      high_availability:
+        type: boolean
+        description: "Whether key is configured for high availability"
+        default: false
+      backup_location:
+        type: string
+        format: URI
+        description: "Backup location for the key (optional)"
+  
+  relationships:
+    type: object
+    description: "Key dependencies and relationships"
+    fields:
+      depends_on:
+        type: array
+        items: string
+        description: "List of key IDs this key depends on"
+        validation: "Referenced keys must exist"
+      used_by:
+        type: array
+        items: string
+        description: "List of services/applications using this key"
+      related_keys:
+        type: array
+        items: string
+        description: "List of related key IDs"
+        validation: "Referenced keys should exist"
+      environments:
+        type: array
+        items: string
+        description: "If key spans multiple environments"
+  
+  operational:
+    type: object
+    description: "Operational configuration"
+    fields:
+      monitoring_enabled:
+        type: boolean
+        description: "Whether monitoring is enabled for this key"
+        default: true
+      alerting_enabled:
+        type: boolean
+        description: "Whether alerting is enabled for this key"
+        default: true
+      auto_rotation_enabled:
+        type: boolean
+        description: "Whether automatic rotation is enabled"
+        default: true
+      emergency_revocation_enabled:
+        type: boolean
+        description: "Whether emergency revocation is enabled"
+        default: true
+      cost_center:
+        type: string
+        description: "Cost center for billing/accounting"
+      project_code:
+        type: string
+        description: "Project code for tracking"
+  
+  audit:
+    type: object
+    description: "Audit and compliance tracking"
+    fields:
+      access_logs_enabled:
+        type: boolean
+        description: "Whether access logging is enabled"
+        default: true
+      usage_tracking_enabled:
+        type: boolean
+        description: "Whether usage tracking is enabled"
+        default: true
+      compliance_scan_enabled:
+        type: boolean
+        description: "Whether compliance scanning is enabled"
+        default: true
+      last_compliance_check:
+        type: string
+        format: ISO 8601 datetime
+        description: "When compliance was last checked"
+      compliance_status:
+        type: string
+        enum: ["compliant", "non-compliant", "needs-review"]
+        description: "Current compliance status"
+        default: "needs-review"
+  
+  metadata:
+    type: object
+    description: "Additional metadata"
+    fields:
+      version:
+        type: string
+        description: "Schema version"
+        default: "2.0"
+      documentation_url:
+        type: string
+        format: URL
+        description: "Link to additional documentation"
+      ticket_reference:
+        type: string
+        description: "Reference to creation ticket/issue"
+      business_justification:
+        type: string
+        description: "Business justification for the key"
+      risk_assessment:
+        type: string
+        enum: ["low", "medium", "high", "critical"]
+        description: "Risk assessment level"
+        default: "medium"
+  
+  custom_fields:
+    type: object
+    description: "Custom fields for organization-specific needs"
+    additionalProperties: true
+    examples:
+      business_owner: "payments-product-owner@company.com"
+      disaster_recovery_tier: "tier-1"
+      encryption_at_rest: true
+
+# Validation rules and constraints
+validation_rules:
+  file_naming:
+    pattern: "{key_id}.yaml"
+    description: "File name must match the key_id field"
+  
+  required_combinations:
+    - condition: "pci_scope == 'cardholder-data'"
+      requirements:
+        - "technical.key_type in ['rsa', 'ec', 'symmetric']"
+        - "audit.access_logs_enabled == true"
+        - "rotation_interval_days <= 365"
+    
+    - condition: "nist_classification in ['secret', 'top-secret']"
+      requirements:
+        - "technical.high_availability == true"
+        - "technical.backup_location is not null"
+        - "operational.monitoring_enabled == true"
+    
+    - condition: "environment == 'prod'"
+      requirements:
+        - "lifecycle.approved_by is not null"
+        - "metadata.risk_assessment is not null"
+  
+  field_dependencies:
+    - field: "compliance.retention_period_days"
+      required_when: "compliance.gdpr_applicable == true"
+    
+    - field: "technical.key_size"
+      required_when: "technical.key_type in ['rsa', 'ec']"
+    
+    - field: "lifecycle.emergency_contact"
+      required_when: "metadata.risk_assessment in ['high', 'critical']"
+
+# Examples for different use cases
+examples:
+  minimal_required:
+    description: "Minimum required fields for a valid key"
+    yaml: |
+      key_id: a1b2c3d4-e5f6-7890-1234-567890abcdef
+      alias: test-key
+      environment: dev
+      owner: dev-team@company.com
+      purpose: Testing key for development
+      created_at: "2024-01-20T14:30:00Z"
+      rotation_interval_days: 365
+      location: "aws-kms://arn:aws:kms:us-east-1:123456789012:key/test-key"
+      compliance:
+        pci_scope: none
+        nist_classification: internal
+      tags: [test, development]
+  
+  production_key:
+    description: "Full production key with all recommended fields"
+    yaml: |
+      key_id: a1b2c3d4-e5f6-7890-1234-567890abcdef
+      alias: payment-service-jwt-prod
+      environment: prod
+      owner: payments-team@company.com
+      purpose: JWT signing for payment service authentication
+      created_at: "2024-01-20T14:30:00Z"
+      rotation_interval_days: 90
+      location: "aws-kms://arn:aws:kms:us-east-1:123456789012:key/payment-jwt"
+      
+      compliance:
+        pci_scope: cardholder-data
+        nist_classification: confidential
+        sox_applicable: true
+        gdpr_applicable: true
+        retention_period_days: 2555
+      
+      lifecycle:
+        status: active
+        created_by: john.doe
+        approved_by: jane.admin
+        approved_at: "2024-01-20T15:00:00Z"
+        emergency_contact: security-team@company.com
+      
+      technical:
+        key_type: rsa
+        key_size: 2048
+        algorithm: RS256
+        encoding: pkcs8
+        key_store_type: aws-kms
+        high_availability: true
+        backup_location: "aws-kms://arn:aws:kms:us-west-2:123456789012:key/backup"
+      
+      operational:
+        monitoring_enabled: true
+        alerting_enabled: true
+        auto_rotation_enabled: true
+        emergency_revocation_enabled: true
+        cost_center: "CC-PAYMENTS-001"
+        project_code: "PROJ-PAY-2024"
+      
+      audit:
+        access_logs_enabled: true
+        usage_tracking_enabled: true
+        compliance_scan_enabled: true
+        compliance_status: compliant
+      
+      metadata:
+        version: "2.0"
+        risk_assessment: high
+        business_justification: "Required for PCI-compliant payment processing"
+      
+      tags: [jwt, payments, pci, production, high-risk]
+
+# Migration guide from v1.0 to v2.0
+migration_guide:
+  description: "How to migrate from schema v1.0 to v2.0"
+  backward_compatibility: "v2.0 is backward compatible with v1.0"
+  
+  automatic_upgrades:
+    - "All v1.0 fields remain valid in v2.0"
+    - "New optional fields can be added incrementally"
+    - "Default values are provided for new fields"
+  
+  recommended_additions:
+    - "Add lifecycle.status = 'active' for existing keys"
+    - "Add metadata.version = '2.0'"
+    - "Consider adding technical specifications"
+    - "Add operational configuration for better automation"
+  
+  breaking_changes: "None - fully backward compatible"
